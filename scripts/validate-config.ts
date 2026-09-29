@@ -20,10 +20,8 @@ import { contato } from '../src/config/contato.config';
 import { privacidade, termos } from '../src/config/legal.pt-BR';
 
 const args = process.argv.slice(2);
-const producao =
-  args.includes('--production') ||
-  (args.includes('--build') &&
-    (process.env.VERCEL_ENV === 'production' || process.env.SITE_ENV === 'production'));
+// Go-live só com SITE_ENV=production (ver src/lib/ambiente.ts). Sem ele, o build publica a versão provisória.
+const producao = args.includes('--production') || (args.includes('--build') && process.env.SITE_ENV === 'production');
 
 const erros: string[] = [];
 const avisos: string[] = [];

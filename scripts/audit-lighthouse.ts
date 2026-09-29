@@ -17,6 +17,8 @@ const METAS = { performance: 95, accessibility: 100, 'best-practices': 95, seo: 
 const JS_MAX_KB = 80;
 /** /avaliar é noindex de propósito (alvo do QR): a nota de SEO não se aplica. */
 const ISENCOES: Record<string, (keyof typeof METAS)[]> = { '/avaliar/': ['seo'] };
+// Versão provisória (sem SITE_ENV=production) é noindex em todas as páginas: SEO não se aplica.
+if (process.env.SITE_ENV !== 'production') for (const p of PAGINAS) ISENCOES[p] = [...(ISENCOES[p] ?? []), 'seo'];
 
 const chromePath = [process.env.CHROMIUM_PATH, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/usr/bin/chromium', '/usr/bin/google-chrome']
   .filter((p): p is string => !!p)

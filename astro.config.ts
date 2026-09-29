@@ -1,12 +1,12 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { profile } from './src/config/profile.config';
+import { urlDoSite } from './src/lib/ambiente';
 
 /** Páginas fora do sitemap (noindex). */
 const foraDoSitemap = ['/avaliar/'];
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? profile.dominio,
+  site: urlDoSite(),
   output: 'static',
   trailingSlash: 'always',
   build: { inlineStylesheets: 'auto' },

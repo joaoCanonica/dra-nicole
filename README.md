@@ -68,8 +68,9 @@ npm run audit:lighthouse
 ### 7. Publicar na Vercel (poucos minutos)
 1. Importe o repositório na Vercel. O `vercel.json` já define framework, `npm ci`, `npm run build` e `dist`.
 2. Em **Settings → Domains**, adicione o domínio e o `www.` (o `vercel.json` redireciona `www` para o domínio principal).
-3. O deploy de **preview** fica verde mesmo com pendências. O de **produção** (`VERCEL_ENV=production`) só passa sem nenhum `CONFIRMAR`, sem termo vetado e com o domínio definitivo.
-4. Depois do primeiro deploy: rode o Rich Results Test, envie o sitemap ao Search Console e teste no celular.
+3. Enquanto houver pendências, qualquer deploy (inclusive o "Production" da Vercel) publica a **versão provisória**: `noindex`, `robots.txt` bloqueando buscadores e uma faixa de "em revisão". A URL base vira a `*.vercel.app` do projeto.
+4. **Go-live:** em Settings → Environment Variables (Production), crie `SITE_ENV=production` e faça redeploy. A partir daí o build só passa sem nenhum `CONFIRMAR`, sem termo vetado e com o domínio definitivo, e o site sai indexável.
+5. Depois do go-live: rode o Rich Results Test, envie o sitemap ao Search Console e teste no celular.
 
 ---
 

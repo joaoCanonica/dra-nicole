@@ -310,6 +310,9 @@ export const copy = {
 
   legal: { versao: 'Versão', indice: 'Nesta página' },
 
+  /** Faixa exibida enquanto o site não estiver em produção final (SITE_ENV=production). */
+  provisorio: 'Versão provisória em revisão. Informações marcadas como pendentes ainda serão confirmadas.',
+
   rodapeLinks: [
     { rotulo: 'Política de privacidade', href: '/privacidade/' },
     { rotulo: 'Termos de uso', href: '/termos/' },

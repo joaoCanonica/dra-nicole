@@ -11,6 +11,7 @@ import AvisoEmergencia from '../components/AvisoEmergencia.astro';
 import BarraContato from '../components/BarraContato.astro';
 import Consentimento from '../components/Consentimento.astro';
 import RodapeLegal from '../components/RodapeLegal.astro';
+import { siteFinal } from '../lib/ambiente';
 import fonteDisplay from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
 import fonteTexto from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
@@ -55,7 +56,7 @@ const tokens = gerarTokensCss();
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={copy.seo.ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
-    {!indexar && <meta name="robots" content="noindex, follow" />}
+    {(!indexar || !siteFinal) && <meta name="robots" content={siteFinal ? 'noindex, follow' : 'noindex, nofollow'} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <style is:inline set:html={tokens}></style>
@@ -63,6 +64,7 @@ const tokens = gerarTokensCss();
   </head>
   <body>
     <a class="skip-link" href="#conteudo">{copy.a11y.pularParaConteudo}</a>
+    {!siteFinal && <p class="provisorio" role="note">{copy.provisorio}</p>}
     <Container as="header" class="topo">
       <a href="/" class="topo__marca">{copy.meta.tituloPadrao.split(copy.meta.separador)[0]}</a>
       {!minimo && <nav aria-label={copy.a11y.menu}>
@@ -86,6 +88,7 @@ const tokens = gerarTokensCss();
   .topo__marca { font-family: var(--fonte-display); font-size: var(--fs-2); color: var(--cor-texto); text-decoration: none; }
   .topo__nav { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-4); list-style: none; padding: 0; }
   .topo__nav :global(a) { display: inline-flex; align-items: center; min-block-size: 2.75rem; }
+  .provisorio { padding: var(--esp-2) var(--margem-pagina); background: var(--cor-texto); color: var(--cor-fundo); font-size: var(--fs-n1); text-align: center; max-inline-size: none; }
   .rodape { background: var(--cor-superficie-alt); padding-block: var(--esp-8); font-size: var(--fs-n1); color: var(--cor-texto-suave); }
   .rodape :global(.container) { display: grid; gap: var(--esp-4); }
 </style>
