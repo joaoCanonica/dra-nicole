@@ -1,0 +1,52 @@
+---
+/**
+ * Alvo do QR code da plaquinha. Um toque até o formulário do Google.
+ * Sem filtro de satisfação, sem incentivo, sem exibir avaliações (CFM / políticas do Google).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/Container.astro';
+import Icon from '../components/Icon.astro';
+import Texto from '../components/Texto.astro';
+import { copy } from '../config/copy.pt-BR';
+import { CONFIRMAR, nomeCompleto, profile, registroProfissional } from '../config/profile.config';
+
+const a = copy.avaliar;
+const url = profile.googleBusiness.urlAvaliar;
+const pendente = url === CONFIRMAR;
+---
+<BaseLayout titulo={a.botao} descricao={a.meta} indexar={false} minimo>
+  <Container largura="texto">
+    <div class="avaliar">
+      <p class="avaliar__nome">{nomeCompleto}<span>{profile.especialidade} · {registroProfissional}</span></p>
+      <h1>{a.titulo}</h1>
+      <p class="avaliar__texto">{a.texto}</p>
+      {pendente ? (
+        <Texto as="p" valor={`${CONFIRMAR}: profile.googleBusiness.urlAvaliar`} />
+      ) : (
+        <a class="avaliar__botao" href={url} rel="noopener">
+          <Icon nome="externo" /> {a.botao}
+        </a>
+      )}
+      <p class="avaliar__nota">{a.nota}</p>
+      <p class="avaliar__nota"><strong>{a.privacidade}</strong></p>
+      <p class="avaliar__contato">{a.contato} <a href="/contato/">{a.contatoLink}</a></p>
+    </div>
+  </Container>
+</BaseLayout>
+<style>
+  .avaliar { display: grid; gap: var(--esp-5); padding-block: var(--esp-7) var(--esp-9); justify-items: start; }
+  .avaliar__nome { display: grid; font-family: var(--fonte-display); font-size: var(--fs-2); }
+  .avaliar__nome span { font-family: var(--fonte-texto); font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .avaliar h1 { font-size: var(--fs-4); }
+  .avaliar__texto { font-size: var(--fs-1); }
+  .avaliar__botao {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--esp-3);
+    inline-size: 100%; max-inline-size: 24rem; min-block-size: 3.5rem; padding: var(--esp-4) var(--esp-6);
+    border-radius: var(--raio-pilula); background: var(--cor-primaria); color: var(--cor-primaria-texto);
+    font-size: var(--fs-1); font-weight: 600; text-decoration: none;
+  }
+  .avaliar__botao:hover { background: var(--cor-primaria-hover); }
+  .avaliar__botao:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+  .avaliar__nota { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .avaliar__contato { font-size: var(--fs-n1); }
+</style>

@@ -1,0 +1,24 @@
+---
+/** Trilha de navegação visível + JSON-LD BreadcrumbList. O primeiro item é sempre o Início. */
+import { copy } from '../config/copy.pt-BR';
+import { schemaBreadcrumbs } from '../lib/schema';
+
+interface Props { itens: { nome: string; caminho: string }[] }
+const todos = [{ nome: copy.breadcrumbs.inicio, caminho: '/' }, ...Astro.props.itens];
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = JSON.stringify(schemaBreadcrumbs(todos, site));
+---
+<nav class="breadcrumbs" aria-label="Você está em">
+  <ol>
+    {todos.map((it, i) => (
+      <li>{i < todos.length - 1 ? <a href={it.caminho}>{it.nome}</a> : <span aria-current="page">{it.nome}</span>}</li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={jsonLd} />
+<style>
+  .breadcrumbs ol { display: flex; flex-wrap: wrap; gap: var(--esp-2); list-style: none; padding: 0; font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .breadcrumbs li + li::before { content: '/'; margin-inline-end: var(--esp-2); color: var(--cor-borda); }
+  .breadcrumbs a { color: var(--cor-texto-suave); min-block-size: 1.5rem; display: inline-block; }
+  .breadcrumbs [aria-current] { color: var(--cor-texto); }
+</style>

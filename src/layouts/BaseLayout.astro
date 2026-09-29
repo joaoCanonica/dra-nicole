@@ -13,10 +13,22 @@ import Consentimento from '../components/Consentimento.astro';
 import fonteDisplay from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
 import fonteTexto from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
-interface Props { titulo?: string; descricao?: string }
-const { titulo, descricao = copy.meta.descricao } = Astro.props;
-const tituloFinal = titulo ? `${titulo}${copy.meta.separador}${copy.meta.tituloPadrao}` : copy.meta.tituloPadrao;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+interface Props {
+  /** Título da página; recebe o sufixo com o nome. Use `tituloCompleto` para substituir tudo. */
+  titulo?: string;
+  tituloCompleto?: string;
+  descricao?: string;
+  /** false = noindex (ex.: /avaliar, que é alvo de QR e não deve aparecer na busca). */
+  indexar?: boolean;
+  /** Página enxuta: sem menu nem barra fixa de contato. */
+  minimo?: boolean;
+  tipoOg?: 'website' | 'article';
+}
+const { titulo, tituloCompleto, descricao = copy.meta.descricao, indexar = true, minimo = false, tipoOg = 'website' } = Astro.props;
+const tituloFinal = tituloCompleto ?? (titulo ? `${titulo}${copy.meta.separador}${copy.meta.tituloPadrao}` : copy.meta.tituloPadrao);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site);
+const ogImagem = new URL('/og.png', site);
 const tokens = gerarTokensCss();
 ---
 <!doctype html>
@@ -35,6 +47,15 @@ const tokens = gerarTokensCss();
     <meta property="og:description" content={descricao} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={profile.idioma.replace('-', '_')} />
+    <meta property="og:type" content={tipoOg} />
+    <meta property="og:site_name" content={copy.meta.tituloPadrao} />
+    <meta property="og:image" content={ogImagem} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={copy.seo.ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {!indexar && <meta name="robots" content="noindex, follow" />}
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <style is:inline set:html={tokens}></style>
     <slot name="head" />
   </head>
@@ -42,9 +63,9 @@ const tokens = gerarTokensCss();
     <a class="skip-link" href="#conteudo">{copy.a11y.pularParaConteudo}</a>
     <Container as="header" class="topo">
       <a href="/" class="topo__marca">{copy.meta.tituloPadrao.split(copy.meta.separador)[0]}</a>
-      <nav aria-label={copy.a11y.menu}>
+      {!minimo && <nav aria-label={copy.a11y.menu}>
         <ul class="topo__nav">{copy.nav.map((i) => <li><Link href={i.href} sutil>{i.rotulo}</Link></li>)}</ul>
-      </nav>
+      </nav>}
     </Container>
     <main id="conteudo"><slot /></main>
     <footer class="rodape">
@@ -55,7 +76,7 @@ const tokens = gerarTokensCss();
         <Consentimento />
       </Container>
     </footer>
-    <BarraContato />
+    {!minimo && <BarraContato />}
   </body>
 </html>
 <style>

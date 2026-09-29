@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/Section.astro';
 import Card from '../../components/Card.astro';
 import Tag from '../../components/Tag.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Container from '../../components/Container.astro';
 import CalendarioCuidado from '../../components/CalendarioCuidado.astro';
 import { copy } from '../../config/copy.pt-BR';
 import { compliance } from '../../config/compliance.config';
@@ -14,7 +16,8 @@ const artigos = (await getCollection('artigos', (a) => import.meta.env.DEV || !a
 );
 const minutos = (corpo = '') => Math.max(1, Math.round(corpo.split(/\s+/).filter(Boolean).length / 200));
 ---
-<BaseLayout titulo={l.eyebrow} descricao={l.descricao}>
+<BaseLayout tituloCompleto={copy.seo.leitura.titulo} descricao={copy.seo.leitura.descricao}>
+  <Container><Breadcrumbs itens={[{ nome: l.eyebrow, caminho: '/leitura/' }]} /></Container>
   <Section id="leitura" eyebrow={l.eyebrow} titulo={l.titulo}>
     <p class="leitura__intro">{l.descricao}</p>
     <ul class="grade leitura__lista" role="list">

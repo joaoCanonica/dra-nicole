@@ -5,8 +5,11 @@
  */
 export const CONFIRMAR = 'CONFIRMAR' as const;
 
+export type DiaSemana = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
+/** Ex.: { dias: ['Monday', 'Wednesday'], abre: '08:00', fecha: '12:00' }. Usado na página e no schema. */
 export interface Horario {
-  dias: string;
+  dias: DiaSemana[];
   abre: string;
   fecha: string;
 }
@@ -35,7 +38,8 @@ export interface Profile {
   whatsapp: { ddi: string; numero: string; mensagemPadrao: string };
   instagram: { usuario: string; url: string };
   email?: string;
-  googleBusiness: { placeId: string; urlAvaliar: string };
+  /** urlAvaliar: link "Escrever avaliação" do Perfil da Empresa (ex.: https://g.page/r/XXXX/review). */
+  googleBusiness: { placeId: string; urlAvaliar: string; urlPerfil: string };
   convenios: string[] | typeof CONFIRMAR;
   atendeParticular: boolean | typeof CONFIRMAR;
   dominio: string;
@@ -87,7 +91,7 @@ export const profile: Profile = {
     mensagemPadrao: 'Olá, gostaria de agendar uma consulta.',
   },
   instagram: { usuario: CONFIRMAR, url: CONFIRMAR },
-  googleBusiness: { placeId: CONFIRMAR, urlAvaliar: CONFIRMAR },
+  googleBusiness: { placeId: CONFIRMAR, urlAvaliar: CONFIRMAR, urlPerfil: CONFIRMAR },
   convenios: CONFIRMAR,
   atendeParticular: CONFIRMAR,
   dominio: 'https://example.com',

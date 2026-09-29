@@ -16,13 +16,17 @@ import { copy } from '../config/copy.pt-BR';
 import { telefoneUrl } from '../config/profile.config';
 import { compliance } from '../config/compliance.config';
 import type { FormaTrecho, Lado } from '../lib/linha';
+import { schemaConsultorio } from '../lib/schema';
 
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = JSON.stringify(schemaConsultorio(site));
 const faq = (await getCollection('faq')).sort((a, b) => a.data.ordem - b.data.ordem);
 // Gestação recebe a curva de ventre; os demais alternam o lado da onda.
 const formaDoMarco = (id: string): FormaTrecho => (id === 'gestacao' ? 'ventre' : 'onda');
 const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
 ---
-<BaseLayout>
+<BaseLayout tituloCompleto={copy.seo.home.titulo} descricao={copy.seo.home.descricao}>
+  <script type="application/ld+json" set:html={jsonLd} slot="head" />
   <Hero />
 
   <Section id="sobre" eyebrow={copy.sobre.eyebrow} titulo={copy.sobre.titulo} trilha>

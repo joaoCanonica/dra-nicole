@@ -5,6 +5,7 @@ import Container from '../../components/Container.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import BotaoWhatsapp from '../../components/BotaoWhatsapp.astro';
 import Link from '../../components/Link.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import AvisoEmergencia from '../../components/AvisoEmergencia.astro';
 import { copy } from '../../config/copy.pt-BR';
 import { nomeCompleto, registroProfissional } from '../../config/profile.config';
@@ -23,10 +24,11 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 const url = new URL(Astro.url.pathname, site);
 const jsonLd = JSON.stringify(schemaArtigo(artigo, url, site));
 ---
-<BaseLayout titulo={d.titulo} descricao={d.resumo}>
+<BaseLayout titulo={d.titulo} descricao={d.resumo} tipoOg="article">
   <script type="application/ld+json" set:html={jsonLd} slot="head" />
   <Container largura="texto" as="div" class="artigo-wrap">
     <article class="artigo">
+      <Breadcrumbs itens={[{ nome: l.eyebrow, caminho: '/leitura/' }, { nome: d.titulo, caminho: `/leitura/${artigo.id}/` }]} />
       <header class="artigo__cabecalho">
         <Eyebrow>{l.eyebrow}</Eyebrow>
         <h1>{d.titulo}</h1>

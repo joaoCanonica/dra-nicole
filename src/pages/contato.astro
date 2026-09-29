@@ -7,6 +7,9 @@ import Texto from '../components/Texto.astro';
 import Icon from '../components/Icon.astro';
 import Button from '../components/Button.astro';
 import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Container from '../components/Container.astro';
+import { schemaConsultorio } from '../lib/schema';
 import FormContato from '../components/FormContato.astro';
 import ComoAgendar from '../components/secoes/ComoAgendar.astro';
 import { copy } from '../config/copy.pt-BR';
@@ -14,6 +17,8 @@ import { contato } from '../config/contato.config';
 import { CONFIRMAR, profile, telefoneUrl } from '../config/profile.config';
 
 const c = copy.contato;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const jsonLd = JSON.stringify(schemaConsultorio(site));
 const r = c.rotulos;
 const e = profile.endereco;
 const linhaEndereco = [e.logradouro, e.complemento, e.bairro, `${e.cidade}-${e.uf}`, e.cep].filter(Boolean).join(', ');
@@ -22,7 +27,9 @@ const mapas = import.meta.glob<{ default: ImageMetadata }>('../assets/mapa/*.{pn
 const imagemMapa = contato.mapa.imagem ? mapas[`../assets/mapa/${contato.mapa.imagem}`]?.default : undefined;
 const urlMapa = contato.mapa.urlGoogleMaps === CONFIRMAR ? e.urlMapa : contato.mapa.urlGoogleMaps;
 ---
-<BaseLayout titulo={c.eyebrow} descricao={c.descricao}>
+<BaseLayout tituloCompleto={copy.seo.contato.titulo} descricao={copy.seo.contato.descricao}>
+  <script type="application/ld+json" set:html={jsonLd} slot="head" />
+  <Container><Breadcrumbs itens={[{ nome: c.eyebrow, caminho: '/contato/' }]} /></Container>
   <Section id="contato" eyebrow={c.eyebrow} titulo={c.titulo}>
     <div class="contato grade">
       <div class="contato__info">
@@ -33,7 +40,7 @@ const urlMapa = contato.mapa.urlGoogleMaps === CONFIRMAR ? e.urlMapa : contato.m
           </div>
           <div>
             <dt><Icon nome="relogio" /> {r.horarios}</dt>
-            {horarios ? horarios.map((h) => <dd>{h.dias}: {h.abre}–{h.fecha}</dd>) : <Texto as="dd" valor={CONFIRMAR} />}
+            {horarios ? horarios.map((h) => <dd>{h.dias.map((d) => copy.diasSemana[d]).join(', ')}: {h.abre}–{h.fecha}</dd>) : <Texto as="dd" valor={CONFIRMAR} />}
           </div>
           <div>
             <dt><Icon nome="telefone" /> {r.telefone}</dt>

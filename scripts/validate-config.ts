@@ -38,12 +38,19 @@ const profileSchema = z.object({
     logradouro: texto, bairro: texto, cidade: texto, uf: z.string().length(2), cep: texto, urlMapa: texto,
   }),
   coordenadas: z.object({ lat: z.number().nullable(), lng: z.number().nullable() }),
-  horarios: z.union([z.literal(CONFIRMAR), z.array(z.object({ dias: texto, abre: texto, fecha: texto })).min(1)]),
+  horarios: z.union([
+    z.literal(CONFIRMAR),
+    z.array(z.object({
+      dias: z.array(z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])).min(1),
+      abre: z.string().regex(/^\d{2}:\d{2}$/),
+      fecha: z.string().regex(/^\d{2}:\d{2}$/),
+    })).min(1),
+  ]),
   telefone: z.object({ exibicao: texto, e164: texto }),
   whatsapp: z.object({ ddi: z.string().regex(/^\d{1,3}$/), numero: texto, mensagemPadrao: texto }),
   instagram: z.object({ usuario: texto, url: texto }),
   email: z.string().email().optional(),
-  googleBusiness: z.object({ placeId: texto, urlAvaliar: texto }),
+  googleBusiness: z.object({ placeId: texto, urlAvaliar: texto, urlPerfil: texto }),
   convenios: z.union([z.literal(CONFIRMAR), z.array(texto)]),
   atendeParticular: z.union([z.literal(CONFIRMAR), z.boolean()]),
   dominio: z.string().url(),
@@ -85,6 +92,14 @@ if (profile.whatsapp.numero !== CONFIRMAR && !/^\d{10,11}$/.test(profile.whatsap
   const permitidos = ['nome', 'telefone', 'periodo', 'consentimento', '_assunto'];
   for (const n of nomes) if (!permitidos.includes(n ?? "")) erros.push(`FormContato: campo "${n}" não permitido (LGPD: só ${permitidos.join(', ')}).`);
   if (/<textarea/i.test(form)) erros.push('FormContato: textarea não permitido (evita texto livre com dado de saúde).');
+}
+
+// Avaliação: o link precisa ser do Google (a página /avaliar não pode redirecionar para outro lugar).
+if (profile.googleBusiness.urlAvaliar !== CONFIRMAR) {
+  try {
+    const h = new URL(profile.googleBusiness.urlAvaliar).hostname;
+    if (!/(^|\.)(google\.[a-z.]+|g\.page)$/.test(h)) erros.push('profile.googleBusiness.urlAvaliar: precisa ser um link do Google.');
+  } catch { erros.push('profile.googleBusiness.urlAvaliar: URL inválida.'); }
 }
 
 // Retrato: o arquivo declarado precisa existir.

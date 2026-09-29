@@ -254,6 +254,48 @@ export const copy = {
     assunto: 'Pedido de contato para agendamento',
   },
 
+  diasSemana: {
+    Monday: 'Segunda', Tuesday: 'Terça', Wednesday: 'Quarta', Thursday: 'Quinta',
+    Friday: 'Sexta', Saturday: 'Sábado', Sunday: 'Domingo',
+  },
+
+  /** /avaliar: sem filtro de satisfação, sem incentivo, sem exibir avaliações. */
+  avaliar: {
+    titulo: 'Obrigada pela visita',
+    texto: 'Se quiser, conte como foi a sua experiência no Google. Toda opinião é bem-vinda e ajuda o consultório a melhorar.',
+    botao: 'Avaliar no Google',
+    nota: 'O botão abre o Google. A avaliação é pública, opcional e não envolve nenhum benefício.',
+    privacidade: 'Não escreva informações de saúde na avaliação: ela fica visível para qualquer pessoa.',
+    contato: 'Prefere falar diretamente com o consultório?',
+    contatoLink: 'Ver telefone e WhatsApp',
+    meta: 'Deixe sua avaliação no Google sobre o consultório.',
+  },
+
+  plaquinha: {
+    titulo: 'Sua opinião nos ajuda a melhorar.',
+    subtitulo: 'Avalie no Google.',
+    instrucao: 'Aponte a câmera do celular para o código.',
+  },
+
+  breadcrumbs: { inicio: 'Início' },
+
+  seo: {
+    /** Títulos e descrições por página (cidade + especialidade, sem superlativo). */
+    home: {
+      titulo: `${nomeCompleto} · Ginecologista e obstetra em ${profile.endereco.cidade}-${profile.endereco.uf}`,
+      descricao: `Consultório de ginecologia e obstetrícia da ${nomeCompleto} em ${profile.endereco.cidade}-${profile.endereco.uf}. Como funciona a consulta, o que levar e como agendar pelo WhatsApp.`,
+    },
+    contato: {
+      titulo: `Endereço e contato · Ginecologista em ${profile.endereco.cidade}-${profile.endereco.uf}`,
+      descricao: `Endereço, horários, telefone e WhatsApp do consultório de ginecologia e obstetrícia da ${nomeCompleto} em ${profile.endereco.cidade}-${profile.endereco.uf}.`,
+    },
+    leitura: {
+      titulo: `Sala de Leitura · Saúde da mulher com fonte`,
+      descricao: `Textos informativos sobre ginecologia e gestação, com fontes oficiais e data de revisão. ${nomeCompleto}, ${profile.endereco.cidade}-${profile.endereco.uf}.`,
+    },
+    ogAlt: `${nomeCompleto} · Ginecologia e Obstetrícia · ${profile.endereco.cidade}-${profile.endereco.uf}`,
+  },
+
   consentimento: {
     titulo: 'Sua privacidade',
     texto: 'Este site pode contar, de forma anônima, quantas pessoas clicam nos botões de contato. Nenhum dado de saúde é coletado. Você aceita?',
