@@ -1,0 +1,108 @@
+---
+/**
+ * Formulário opcional de contato. Campos permitidos (LGPD): nome, telefone, período e consentimento.
+ * NUNCA adicionar motivo da consulta, sintomas, exames ou texto livre (o validador bloqueia).
+ * Sem backend próprio: destino em contato.config (whatsapp | mailto | endpoint).
+ */
+import { contato } from '../config/contato.config';
+import { copy } from '../config/copy.pt-BR';
+import { compliance } from '../config/compliance.config';
+import { linkWhatsapp } from '../config/profile.config';
+
+const f = copy.formulario;
+const { destino, email, endpoint } = contato.formulario;
+const modelo = f.mensagem('{nome}', '{telefone}', '{periodo}');
+const baseWa = linkWhatsapp('');
+const acao =
+  destino === 'mailto' ? `mailto:${email}?subject=${encodeURIComponent(f.assunto)}` : destino === 'endpoint' ? endpoint : undefined;
+const rotuloEnviar = destino === 'mailto' ? f.enviarEmail : destino === 'endpoint' ? f.enviarEndpoint : f.enviar;
+---
+{contato.formulario.habilitado && (
+  <form
+    class="form-contato"
+    data-form-contato
+    data-destino={destino}
+    data-modelo={modelo}
+    data-base={baseWa}
+    action={acao}
+    method={destino === 'whatsapp' ? 'get' : 'post'}
+    enctype={destino === 'mailto' ? 'text/plain' : undefined}
+    aria-labelledby="form-contato-titulo"
+  >
+    <h2 id="form-contato-titulo" class="form-contato__titulo">{f.titulo}</h2>
+    <p class="form-contato__texto">{f.texto}</p>
+
+    <div class="campo">
+      <label for="fc-nome">{f.nome}</label>
+      <input id="fc-nome" name="nome" type="text" autocomplete="name" required maxlength="80" />
+    </div>
+    <div class="campo">
+      <label for="fc-tel">{f.telefone}</label>
+      <input id="fc-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required
+        pattern="[\d\s()+\-]{10,20}" aria-describedby="fc-tel-ajuda" />
+      <p id="fc-tel-ajuda" class="campo__ajuda">{f.telefoneAjuda}</p>
+    </div>
+    <fieldset class="campo campo--grupo">
+      <legend>{f.periodo}</legend>
+      <div class="form-contato__periodos">
+        {f.periodos.map((p, i) => (
+          <label class="opcao"><input type="radio" name="periodo" value={p.rotulo} checked={i === f.periodos.length - 1} /> {p.rotulo}</label>
+        ))}
+      </div>
+    </fieldset>
+    <label class="consentimento">
+      <input type="checkbox" name="consentimento" value="sim" required />
+      <span>{compliance.consentimentoFormulario}</span>
+    </label>
+    {destino === 'mailto' && <input type="hidden" name="_assunto" value={f.assunto} />}
+
+    <button class="form-contato__enviar" type="submit" data-evento="formulario" disabled={destino === 'whatsapp'}>{rotuloEnviar}</button>
+    {destino === 'whatsapp' && <noscript><p class="campo__ajuda">{f.semJs}</p></noscript>}
+  </form>
+)}
+
+<script>
+  // Só para destino "whatsapp": monta a mensagem neutra e abre o WhatsApp. Nada é enviado a outro lugar.
+  const form = document.querySelector<HTMLFormElement>('[data-form-contato][data-destino="whatsapp"]');
+  if (form) {
+    form.querySelector<HTMLButtonElement>('button[type="submit"]')?.removeAttribute('disabled');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const dados = new FormData(form);
+      const limpa = (v: FormDataEntryValue | null) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, 80);
+      const texto = (form.dataset.modelo ?? '')
+        .replace('{nome}', limpa(dados.get('nome')))
+        .replace('{telefone}', limpa(dados.get('telefone')))
+        .replace('{periodo}', limpa(dados.get('periodo')));
+      window.location.href = `${form.dataset.base ?? ''}${encodeURIComponent(texto)}`;
+    });
+  }
+</script>
+
+<style>
+  .form-contato { display: grid; gap: var(--esp-5); padding: var(--esp-6); background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio-l); max-inline-size: 36rem; }
+  .form-contato__titulo { font-size: var(--fs-3); }
+  .form-contato__texto { color: var(--cor-texto-suave); }
+  .campo { display: grid; gap: var(--esp-2); }
+  .campo label, .campo legend { font-weight: 600; }
+  .campo input[type='text'], .campo input[type='tel'] {
+    min-block-size: 2.75rem; padding: var(--esp-3) var(--esp-4);
+    border: 1.5px solid var(--cor-texto-suave); border-radius: var(--raio-m);
+    background: var(--cor-fundo); color: var(--cor-texto);
+  }
+  .campo input:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+  .campo__ajuda { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .campo--grupo { border: 0; padding: 0; margin: 0; }
+  .form-contato__periodos { display: flex; flex-wrap: wrap; gap: var(--esp-4); }
+  .opcao { display: inline-flex; align-items: center; gap: var(--esp-2); min-block-size: 2.75rem; font-weight: 400; }
+  .opcao input, .consentimento input { inline-size: 1.25rem; block-size: 1.25rem; accent-color: var(--cor-primaria); }
+  .consentimento { display: grid; grid-template-columns: auto 1fr; gap: var(--esp-3); align-items: start; font-size: var(--fs-n1); }
+  .form-contato__enviar {
+    justify-self: start; min-block-size: 2.75rem; padding: var(--esp-3) var(--esp-6);
+    border: 0; border-radius: var(--raio-pilula); background: var(--cor-primaria); color: var(--cor-primaria-texto);
+    font-weight: 600; cursor: pointer;
+  }
+  .form-contato__enviar:disabled { opacity: 0.6; cursor: not-allowed; }
+  .form-contato__enviar:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+</style>

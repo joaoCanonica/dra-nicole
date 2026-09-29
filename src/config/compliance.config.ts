@@ -29,6 +29,10 @@ export const compliance = {
   /** Nenhum script de terceiros carrega antes do consentimento. */
   cookies: { usaNaoEssenciais: false },
 
+  /** Texto de consentimento do formulário de contato (LGPD, art. 7º, I). */
+  consentimentoFormulario:
+    'Autorizo o uso do meu nome e telefone apenas para retorno sobre agendamento. Os dados não são usados para outra finalidade nem compartilhados.',
+
   guia: {
     aviso:
       'Este guia só ajuda a se preparar para a consulta. Ele não faz triagem, não indica diagnóstico nem tratamento, e nada do que você escolhe aqui é enviado ou guardado.',

@@ -1,0 +1,39 @@
+---
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+import Button from '../Button.astro';
+import Link from '../Link.astro';
+import { copy } from '../../config/copy.pt-BR';
+import { telefoneUrl } from '../../config/profile.config';
+
+const a = copy.agendar;
+---
+<div class="agendar">
+  <ol class="agendar__passos" role="list">
+    {a.passos.map((p, i) => (
+      <li class="agendar__passo">
+        <span class="agendar__num" aria-hidden="true">{i + 1}</span>
+        <h3>{p.titulo}</h3>
+        <p>{p.texto}</p>
+      </li>
+    ))}
+  </ol>
+  <div class="agendar__acoes">
+    <BotaoWhatsapp origem="como-agendar">{a.cta}</BotaoWhatsapp>
+    <span class="agendar__alt">{a.alternativa}</span>
+    <Button href={telefoneUrl} icone="telefone" variante="secundario" data-evento="telefone" data-origem="como-agendar">{a.ctaTelefone}</Button>
+  </div>
+  <Link href="/contato/">{a.maisOpcoes}</Link>
+</div>
+<style>
+  .agendar { display: grid; gap: var(--esp-6); justify-items: start; }
+  .agendar__passos { list-style: none; padding: 0; display: grid; gap: var(--esp-5); inline-size: 100%; counter-reset: passo; }
+  @media (min-width: 48rem) { .agendar__passos { grid-template-columns: repeat(3, 1fr); } }
+  .agendar__passo { display: grid; gap: var(--esp-2); padding: var(--esp-5); background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio-l); }
+  .agendar__num {
+    display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; border-radius: 50%;
+    border: 1.5px solid var(--cor-acento); color: var(--cor-acento-texto); font-family: var(--fonte-display); font-size: var(--fs-1);
+  }
+  .agendar__passo h3 { font-size: var(--fs-2); }
+  .agendar__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-4); }
+  .agendar__alt { color: var(--cor-texto-suave); }
+</style>

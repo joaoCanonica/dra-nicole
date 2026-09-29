@@ -1,0 +1,87 @@
+---
+/**
+ * Consentimento para métricas anônimas. Só é renderizado se contato.analytics.tipo !== 'nenhum'.
+ * Antes do "Aceitar": nenhum script de terceiros, nenhum request, nenhum cookie.
+ * Eventos: apenas { evento, origem, caminho } — sem dados pessoais nem de saúde.
+ */
+import { contato } from '../config/contato.config';
+import { copy } from '../config/copy.pt-BR';
+
+const a = contato.analytics;
+const c = copy.consentimento;
+const config = JSON.stringify(a);
+---
+{a.tipo !== 'nenhum' && (
+  <>
+    <div class="consentimento-banner" data-consentimento data-config={config} role="region" aria-label={c.titulo} hidden>
+      <p><strong>{c.titulo}.</strong> {c.texto}</p>
+      <div class="consentimento-banner__acoes">
+        <button type="button" data-consentir="sim">{c.aceitar}</button>
+        <button type="button" data-consentir="nao">{c.recusar}</button>
+      </div>
+    </div>
+    <button type="button" class="consentimento-reabrir" data-consentimento-reabrir>{c.preferencias}</button>
+  </>
+)}
+
+<script>
+  type Cfg = { tipo: 'beacon'; endpoint: string } | { tipo: 'plausible'; script: string; dominio: string };
+  const CHAVE = 'consentimento-metricas';
+  const banner = document.querySelector<HTMLElement>('[data-consentimento]');
+  if (banner) {
+    const cfg = JSON.parse(banner.dataset.config ?? '{}') as Cfg;
+    const ler = () => { try { return localStorage.getItem(CHAVE); } catch { return null; } };
+    const gravar = (v: string) => { try { localStorage.setItem(CHAVE, v); } catch { /* sem armazenamento: vale só nesta visita */ } };
+    let ativo = false;
+
+    const ativar = () => {
+      if (ativo) return;
+      ativo = true;
+      if (cfg.tipo === 'plausible') {
+        const s = document.createElement('script');
+        s.defer = true; s.src = cfg.script; s.dataset.domain = cfg.dominio;
+        document.head.append(s);
+      }
+    };
+    const enviar = (evento: string, origem: string) => {
+      if (!ativo) return;
+      const props = { origem, caminho: location.pathname };
+      if (cfg.tipo === 'beacon') navigator.sendBeacon?.(cfg.endpoint, JSON.stringify({ evento, ...props }));
+      if (cfg.tipo === 'plausible') (window as unknown as { plausible?: (e: string, o: object) => void }).plausible?.(evento, { props });
+    };
+
+    document.addEventListener('click', (e) => {
+      const alvo = (e.target as Element).closest<HTMLElement>('[data-evento]');
+      if (alvo) enviar(alvo.dataset.evento ?? '', alvo.dataset.origem ?? '');
+    });
+    banner.addEventListener('click', (e) => {
+      const v = (e.target as HTMLElement).closest<HTMLElement>('[data-consentir]')?.dataset.consentir;
+      if (!v) return;
+      gravar(v);
+      banner.hidden = true;
+      if (v === 'sim') ativar();
+    });
+    document.querySelector('[data-consentimento-reabrir]')?.addEventListener('click', () => { banner.hidden = false; });
+
+    const escolha = ler();
+    if (escolha === 'sim') ativar();
+    else if (escolha !== 'nao') banner.hidden = false;
+  }
+</script>
+
+<style>
+  .consentimento-banner {
+    position: fixed; z-index: 60; inset-inline: var(--esp-4); inset-block-end: calc(5rem + env(safe-area-inset-bottom));
+    display: grid; gap: var(--esp-4); max-inline-size: 32rem; padding: var(--esp-5);
+    background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio-l); box-shadow: var(--sombra-l);
+    font-size: var(--fs-n1);
+  }
+  @media (min-width: 48rem) { .consentimento-banner { inset-block-end: var(--esp-5); } }
+  .consentimento-banner__acoes { display: flex; gap: var(--esp-3); }
+  .consentimento-banner button, .consentimento-reabrir {
+    min-block-size: 2.75rem; padding: var(--esp-2) var(--esp-5); border-radius: var(--raio-pilula);
+    border: 1.5px solid var(--cor-primaria); background: transparent; color: var(--cor-primaria); font-weight: 600; cursor: pointer;
+  }
+  /* Aceitar e Recusar com o mesmo peso visual (sem induzir a escolha). */
+  .consentimento-reabrir { border: 0; padding-inline: 0; font-size: var(--fs-n1); text-decoration: underline; color: var(--cor-texto-suave); }
+</style>

@@ -3,11 +3,11 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
-import Button from '../../components/Button.astro';
+import BotaoWhatsapp from '../../components/BotaoWhatsapp.astro';
 import Link from '../../components/Link.astro';
 import AvisoEmergencia from '../../components/AvisoEmergencia.astro';
 import { copy } from '../../config/copy.pt-BR';
-import { nomeCompleto, registroProfissional, whatsappUrl } from '../../config/profile.config';
+import { nomeCompleto, registroProfissional } from '../../config/profile.config';
 import { schemaArtigo } from '../../lib/schema';
 
 export async function getStaticPaths() {
@@ -53,7 +53,7 @@ const jsonLd = JSON.stringify(schemaArtigo(artigo, url, site));
 
       <aside class="artigo__cta">
         <p>{l.cta}</p>
-        <Button href={whatsappUrl} icone="whatsapp" variante="secundario">{l.ctaBotao}</Button>
+        <BotaoWhatsapp variante="secundario" origem="artigo">{l.ctaBotao}</BotaoWhatsapp>
       </aside>
 
       <AvisoEmergencia compacto />

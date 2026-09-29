@@ -10,8 +10,10 @@ import Sobre from '../components/secoes/Sobre.astro';
 import AntesDaConsulta from '../components/secoes/AntesDaConsulta.astro';
 import Convenios from '../components/secoes/Convenios.astro';
 import GuiaConsulta from '../components/GuiaConsulta.astro';
+import ComoAgendar from '../components/secoes/ComoAgendar.astro';
+import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
 import { copy } from '../config/copy.pt-BR';
-import { profile, whatsappUrl } from '../config/profile.config';
+import { telefoneUrl } from '../config/profile.config';
 import { compliance } from '../config/compliance.config';
 import type { FormaTrecho, Lado } from '../lib/linha';
 
@@ -57,6 +59,11 @@ const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
     <Convenios />
   </Section>
 
+  <Section id="como-agendar" eyebrow={copy.agendar.eyebrow} titulo={copy.agendar.titulo} tom="alt" trilha>
+    <Trecho slot="trilha" forma="onda" lado={-1} marco />
+    <ComoAgendar />
+  </Section>
+
   <Section id="faq" eyebrow={copy.faq.eyebrow} titulo={copy.faq.titulo} trilha>
     <Trecho slot="trilha" forma="onda" lado={-1} />
     <div class="faq-lista">
@@ -73,8 +80,8 @@ const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
     <Trecho slot="trilha" forma="fim" lado={1} />
     <p>{copy.ctaFinal.texto}</p>
     <div class="cta-final__acoes">
-      <Button href={whatsappUrl} icone="whatsapp">{copy.ctaFinal.ctaPrimario}</Button>
-      <Button href={`tel:${profile.telefone.e164}`} icone="telefone" variante="secundario">{copy.ctaFinal.ctaTelefone}</Button>
+      <BotaoWhatsapp origem="cta-final">{copy.ctaFinal.ctaPrimario}</BotaoWhatsapp>
+      <Button href={telefoneUrl} icone="telefone" variante="secundario" data-evento="telefone" data-origem="cta-final">{copy.ctaFinal.ctaTelefone}</Button>
     </div>
     <p class="cta-final__aviso">{compliance.avisoWhatsapp}</p>
   </Section>

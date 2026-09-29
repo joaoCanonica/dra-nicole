@@ -1,0 +1,51 @@
+---
+/**
+ * Barra fixa de contato no mobile (WhatsApp + ligar). Respeita a safe-area e reserva
+ * espaço no fim da página (body padding) para não cobrir conteúdo nem rodapé.
+ */
+import Icon from './Icon.astro';
+import { copy } from '../config/copy.pt-BR';
+import { linkWhatsapp, telefoneUrl } from '../config/profile.config';
+
+const b = copy.barraContato;
+---
+<nav class="barra-contato" aria-label={b.rotulo}>
+  <a class="barra-contato__btn barra-contato__btn--wa" href={linkWhatsapp()} target="_blank" rel="noopener noreferrer" data-evento="whatsapp" data-origem="barra-mobile">
+    <Icon nome="whatsapp" /> <span>{b.whatsapp}</span><span class="visually-hidden"> {copy.a11y.abreEmNovaAba}</span>
+  </a>
+  <a class="barra-contato__btn" href={telefoneUrl} data-evento="telefone" data-origem="barra-mobile">
+    <Icon nome="telefone" /> <span>{b.ligar}</span>
+  </a>
+</nav>
+<style>
+  .barra-contato {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--esp-3);
+    padding: var(--esp-3) var(--esp-4) calc(var(--esp-3) + env(safe-area-inset-bottom));
+    padding-inline: max(var(--esp-4), env(safe-area-inset-left)) max(var(--esp-4), env(safe-area-inset-right));
+    background: color-mix(in srgb, var(--cor-superficie) 94%, transparent);
+    backdrop-filter: blur(8px);
+    border-block-start: 1px solid var(--cor-borda);
+    box-shadow: 0 -6px 18px -10px rgb(20 35 31 / 0.25);
+  }
+  .barra-contato__btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--esp-2);
+    min-block-size: 3rem; border-radius: var(--raio-pilula);
+    font-weight: 600; text-decoration: none;
+    border: 1.5px solid var(--cor-primaria); color: var(--cor-primaria);
+  }
+  .barra-contato__btn--wa { background: var(--cor-primaria); color: var(--cor-primaria-texto); }
+  .barra-contato__btn:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+  /* Reserva a altura da barra no fim da página (o rodapé nunca fica embaixo dela). */
+  :global(body) { padding-block-end: calc(4.5rem + env(safe-area-inset-bottom)); }
+  @media (min-width: 48rem) {
+    .barra-contato { display: none; }
+    :global(body) { padding-block-end: 0; }
+  }
+  @media print { .barra-contato { display: none; } }
+</style>

@@ -40,7 +40,7 @@ const profileSchema = z.object({
   coordenadas: z.object({ lat: z.number().nullable(), lng: z.number().nullable() }),
   horarios: z.union([z.literal(CONFIRMAR), z.array(z.object({ dias: texto, abre: texto, fecha: texto })).min(1)]),
   telefone: z.object({ exibicao: texto, e164: texto }),
-  whatsapp: z.object({ e164: texto, mensagemPadrao: texto }),
+  whatsapp: z.object({ ddi: z.string().regex(/^\d{1,3}$/), numero: texto, mensagemPadrao: texto }),
   instagram: z.object({ usuario: texto, url: texto }),
   email: z.string().email().optional(),
   googleBusiness: z.object({ placeId: texto, urlAvaliar: texto }),
@@ -71,6 +71,20 @@ if (!r.success) {
 // LGPD: mensagem padrão do WhatsApp não pode induzir envio de dado clínico.
 if (/sintoma|queixa|exame|dor|sangr/i.test(profile.whatsapp.mensagemPadrao)) {
   erros.push('profile.whatsapp.mensagemPadrao não pode pedir sintomas ou dados clínicos (LGPD).');
+}
+
+// Número do WhatsApp: só dígitos, com DDD (10–11 dígitos no Brasil).
+if (profile.whatsapp.numero !== CONFIRMAR && !/^\d{10,11}$/.test(profile.whatsapp.numero)) {
+  erros.push('profile.whatsapp.numero: use DDD + número, só dígitos (10 ou 11 dígitos).');
+}
+
+// LGPD: o formulário de contato só pode ter os campos permitidos.
+{
+  const form = readFileSync('src/components/FormContato.astro', 'utf8');
+  const nomes = [...form.matchAll(/\bname="([^"]+)"/g)].map((m) => m[1]);
+  const permitidos = ['nome', 'telefone', 'periodo', 'consentimento', '_assunto'];
+  for (const n of nomes) if (!permitidos.includes(n ?? "")) erros.push(`FormContato: campo "${n}" não permitido (LGPD: só ${permitidos.join(', ')}).`);
+  if (/<textarea/i.test(form)) erros.push('FormContato: textarea não permitido (evita texto livre com dado de saúde).');
 }
 
 // Retrato: o arquivo declarado precisa existir.

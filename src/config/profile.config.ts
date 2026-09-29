@@ -31,7 +31,8 @@ export interface Profile {
   coordenadas: { lat: number | null; lng: number | null };
   horarios: Horario[] | typeof CONFIRMAR;
   telefone: { exibicao: string; e164: string };
-  whatsapp: { e164: string; mensagemPadrao: string };
+  /** WhatsApp: link final = https://wa.me/<ddi><numero>?text=<mensagemPadrao>. */
+  whatsapp: { ddi: string; numero: string; mensagemPadrao: string };
   instagram: { usuario: string; url: string };
   email?: string;
   googleBusiness: { placeId: string; urlAvaliar: string };
@@ -81,7 +82,8 @@ export const profile: Profile = {
   telefone: { exibicao: CONFIRMAR, e164: CONFIRMAR },
   // A mensagem padrão NUNCA pede sintoma ou dado clínico (LGPD).
   whatsapp: {
-    e164: CONFIRMAR,
+    ddi: '55',
+    numero: CONFIRMAR, // DDD + número, só dígitos (ex.: 49999999999)
     mensagemPadrao: 'Olá, gostaria de agendar uma consulta.',
   },
   instagram: { usuario: CONFIRMAR, url: CONFIRMAR },
@@ -110,6 +112,10 @@ export const nomeCompleto = [profile.tratamento, profile.nome].filter(Boolean).j
 export const registroProfissional = `CRM-${profile.crm.uf} ${profile.crm.numero}${
   profile.rqe.length ? ` · RQE ${profile.rqe.join(', ')}` : ''
 }`;
-export const whatsappUrl = `https://wa.me/${profile.whatsapp.e164.replace(/\D/g, '')}?text=${encodeURIComponent(
-  profile.whatsapp.mensagemPadrao,
-)}`;
+/** Link do WhatsApp com mensagem neutra (nunca inclui dado clínico). */
+export function linkWhatsapp(mensagem: string = profile.whatsapp.mensagemPadrao): string {
+  const numero = `${profile.whatsapp.ddi}${profile.whatsapp.numero}`.replace(/\D/g, '');
+  return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+}
+export const whatsappUrl = linkWhatsapp();
+export const telefoneUrl = `tel:${profile.telefone.e164.replace(/[^\d+]/g, '') || profile.telefone.e164}`;

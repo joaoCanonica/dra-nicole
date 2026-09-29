@@ -1,6 +1,6 @@
 # Pendências de confirmação
 
-Gerado por `npm run pendencias`. 48 item(ns). Enquanto houver itens aqui, o deploy de produção fica bloqueado.
+Gerado por `npm run pendencias`. 49 item(ns). Enquanto houver itens aqui, o deploy de produção fica bloqueado.
 
 | Onde | Texto atual |
 |---|---|
@@ -13,7 +13,7 @@ Gerado por `npm run pendencias`. 48 item(ns). Enquanto houver itens aqui, o depl
 | `profile.horarios` | CONFIRMAR |
 | `profile.telefone.exibicao` | CONFIRMAR |
 | `profile.telefone.e164` | CONFIRMAR |
-| `profile.whatsapp.e164` | CONFIRMAR |
+| `profile.whatsapp.numero` | CONFIRMAR |
 | `profile.instagram.usuario` | CONFIRMAR |
 | `profile.instagram.url` | CONFIRMAR |
 | `profile.googleBusiness.placeId` | CONFIRMAR |
@@ -38,6 +38,7 @@ Gerado por `npm run pendencias`. 48 item(ns). Enquanto houver itens aqui, o depl
 | `copy.consulta.passos[4].texto` | Ao final, você sai sabendo o que foi avaliado e quais são os próximos passos. CONFIRMAR: as orientações e pedidos de exame são entregues por escrito? Impressos ou digitais? |
 | `copy.consulta.passos[5].texto` | CONFIRMAR: quando há retorno (ex.: para mostrar exames), como agendar e se tem custo à parte. |
 | `copy.convenios.pendente` | CONFIRMAR: lista de convênios atendidos e se atende particular. |
+| `copy.agendar.revisaoPassos` | CONFIRMAR: quem responde o WhatsApp e em quanto tempo? A confirmação inclui o que levar? |
 | `src/content/artigos/cuidados-no-puerperio.md:7` | revisaoMedica: CONFIRMAR |
 | `src/content/artigos/dor-e-colica-quando-procurar-avaliacao.md:7` | revisaoMedica: CONFIRMAR |
 | `src/content/artigos/endometriose.md:7` | revisaoMedica: CONFIRMAR |

@@ -23,6 +23,7 @@ export const copy = {
     { rotulo: 'Qual consulta?', href: '/#guia' },
     { rotulo: 'Convênios', href: '/#convenios' },
     { rotulo: 'Sala de Leitura', href: '/leitura/' },
+    { rotulo: 'Contato', href: '/contato/' },
   ],
   hero: {
     eyebrow: 'Ginecologia & Obstetrícia',
@@ -191,6 +192,74 @@ export const copy = {
     somenteParticular: 'No momento, o atendimento é apenas particular.',
     somenteConvenio: 'No momento, o atendimento é apenas pelos convênios listados.',
     duvidas: 'Se o seu plano não está na lista, pergunte ao agendar.',
+  },
+
+  barraContato: {
+    rotulo: 'Contato rápido',
+    whatsapp: 'WhatsApp',
+    ligar: 'Ligar',
+  },
+
+  agendar: {
+    eyebrow: 'Como agendar',
+    titulo: 'Agendar é simples',
+    passos: [
+      { titulo: 'Chame no WhatsApp', texto: 'A mensagem já vai pronta. Não é preciso explicar o motivo da consulta.' },
+      { titulo: 'Combine dia e horário', texto: 'Você escolhe o período que combina com a sua rotina.' },
+      { titulo: 'Receba a confirmação', texto: 'Junto com a confirmação, vão as orientações do que levar no dia.' },
+    ],
+    revisaoPassos: `${CONFIRMAR}: quem responde o WhatsApp e em quanto tempo? A confirmação inclui o que levar?`,
+    cta: 'Chamar no WhatsApp',
+    alternativa: 'Prefere ligar?',
+    ctaTelefone: 'Ligar para o consultório',
+    maisOpcoes: 'Endereço e outras formas de contato',
+  },
+
+  contato: {
+    eyebrow: 'Contato',
+    titulo: 'Como chegar e falar com o consultório',
+    descricao: `Endereço, horários, telefone e WhatsApp do consultório em ${profile.endereco.cidade}-${profile.endereco.uf}.`,
+    rotulos: {
+      endereco: 'Endereço',
+      horarios: 'Horários de atendimento',
+      telefone: 'Telefone',
+      whatsapp: 'WhatsApp',
+      comoChegar: 'Como chegar',
+      estacionamento: 'Estacionamento',
+      acessibilidade: 'Acessibilidade',
+    },
+    abrirMapa: 'Abrir no Google Maps',
+    mapaAlt: `Mapa com a localização do consultório em ${profile.endereco.cidade}-${profile.endereco.uf}`,
+    mapaNota: 'O mapa abre no site do Google, fora deste site.',
+  },
+
+  formulario: {
+    titulo: 'Prefere que o consultório entre em contato?',
+    texto: 'Deixe só o seu nome, telefone e o período de preferência. Não peça nem envie informações de saúde por aqui.',
+    nome: 'Nome',
+    telefone: 'Telefone com DDD',
+    telefoneAjuda: 'Ex.: (49) 99999-9999',
+    periodo: 'Período de preferência para retorno',
+    periodos: [
+      { valor: 'manha', rotulo: 'Manhã' },
+      { valor: 'tarde', rotulo: 'Tarde' },
+      { valor: 'indiferente', rotulo: 'Tanto faz' },
+    ],
+    enviar: 'Enviar pelo WhatsApp',
+    enviarEmail: 'Enviar por e-mail',
+    enviarEndpoint: 'Enviar',
+    semJs: 'Para enviar por aqui, é preciso JavaScript ativo. Você também pode usar o botão do WhatsApp ou ligar.',
+    mensagem: (nome: string, telefone: string, periodo: string) =>
+      `Olá, meu nome é ${nome}. Gostaria de agendar uma consulta. Meu telefone é ${telefone} e prefiro retorno no período: ${periodo}.`,
+    assunto: 'Pedido de contato para agendamento',
+  },
+
+  consentimento: {
+    titulo: 'Sua privacidade',
+    texto: 'Este site pode contar, de forma anônima, quantas pessoas clicam nos botões de contato. Nenhum dado de saúde é coletado. Você aceita?',
+    aceitar: 'Aceitar',
+    recusar: 'Recusar',
+    preferencias: 'Preferências de privacidade',
   },
 
   ctaFinal: {

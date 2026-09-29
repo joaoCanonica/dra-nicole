@@ -1,0 +1,9 @@
+---
+/** Botão central de WhatsApp: mensagem neutra do config + evento anônimo (só com consentimento). */
+import Button from './Button.astro';
+import { linkWhatsapp } from '../config/profile.config';
+
+interface Props { variante?: 'primario' | 'secundario' | 'fantasma'; bloco?: boolean; origem?: string; class?: string }
+const { variante = 'primario', bloco = false, origem = 'pagina', class: cls } = Astro.props;
+---
+<Button href={linkWhatsapp()} icone="whatsapp" variante={variante} bloco={bloco} class={cls} data-evento="whatsapp" data-origem={origem}><slot /></Button>

@@ -8,6 +8,8 @@ import { theme } from '../config/theme.config';
 import Container from '../components/Container.astro';
 import Link from '../components/Link.astro';
 import AvisoEmergencia from '../components/AvisoEmergencia.astro';
+import BarraContato from '../components/BarraContato.astro';
+import Consentimento from '../components/Consentimento.astro';
 import fonteDisplay from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
 import fonteTexto from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
@@ -50,14 +52,17 @@ const tokens = gerarTokensCss();
         <AvisoEmergencia />
         <p>{compliance.rodapeCfm}</p>
         <p class="rodape__legal">{compliance.avisoConteudo}</p>
+        <Consentimento />
       </Container>
     </footer>
+    <BarraContato />
   </body>
 </html>
 <style>
   :global(.topo) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-4); padding-block: var(--esp-5); }
   .topo__marca { font-family: var(--fonte-display); font-size: var(--fs-2); color: var(--cor-texto); text-decoration: none; }
-  .topo__nav { display: flex; gap: var(--esp-5); list-style: none; padding: 0; }
+  .topo__nav { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-4); list-style: none; padding: 0; }
+  .topo__nav :global(a) { display: inline-flex; align-items: center; min-block-size: 2.75rem; }
   .rodape { background: var(--cor-superficie-alt); padding-block: var(--esp-8); font-size: var(--fs-n1); color: var(--cor-texto-suave); }
   .rodape :global(.container) { display: grid; gap: var(--esp-4); }
 </style>
