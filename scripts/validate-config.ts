@@ -83,6 +83,12 @@ if (/sintoma|queixa|exame|dor|sangr/i.test(profile.whatsapp.mensagemPadrao)) {
   erros.push('profile.whatsapp.mensagemPadrao não pode pedir sintomas ou dados clínicos (LGPD).');
 }
 
+// Domínio definitivo: em produção não pode ser o de exemplo.
+if (/example\.(com|org)|localhost/.test(profile.dominio)) {
+  const msg = `profile.dominio ainda é "${profile.dominio}". Defina o domínio definitivo (site, sitemap, robots, canonical e QR dependem dele).`;
+  if (producao) erros.push(msg); else avisos.push(msg);
+}
+
 // Número do WhatsApp: só dígitos, com DDD (10–11 dígitos no Brasil).
 if (profile.whatsapp.numero !== CONFIRMAR && !/^\d{10,11}$/.test(profile.whatsapp.numero)) {
   erros.push('profile.whatsapp.numero: use DDD + número, só dígitos (10 ou 11 dígitos).');

@@ -46,7 +46,8 @@ try {
   await esperar();
   const b = await chromium.launch({ executablePath: exe });
   for (const c of CENARIOS) {
-    const ctx = await b.newContext(c);
+    // bypassCSP só para injetar o axe; o CSP real é testado à parte.
+    const ctx = await b.newContext({ ...c, bypassCSP: true });
     const p = await ctx.newPage();
     for (const pag of PAGINAS) {
       await p.goto(BASE + pag, { waitUntil: 'load' });

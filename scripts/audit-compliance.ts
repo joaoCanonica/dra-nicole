@@ -61,6 +61,9 @@ for (const arq of paginas(DIST)) {
   ] as [string, string][];
   for (const [tipo, url] of recursos) if (url && ehExterno(url)) erros.push(`${pag}: ${tipo} de terceiro carregado sem consentimento: ${url}`);
   if (/fonts\.googleapis|fonts\.gstatic/.test(html)) erros.push(`${pag}: Google Fonts remoto.`);
+  const csp = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html)?.[1];
+  if (!csp) erros.push(`${pag}: sem Content-Security-Policy.`);
+  else if (/script-src[^;]*'unsafe-inline'/.test(csp)) erros.push(`${pag}: CSP com 'unsafe-inline' em script-src.`);
 
   // 3b. Campos de formulário (LGPD: nada clínico)
   for (const m of html.matchAll(/<(?:input|select|textarea)[^>]*\sname="([^"]+)"/g)) {
