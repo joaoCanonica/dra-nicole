@@ -1,0 +1,92 @@
+---
+import Container from './Container.astro';
+import Eyebrow from './Eyebrow.astro';
+import Button from './Button.astro';
+import PortraitFrame from './PortraitFrame.astro';
+import Trecho from './linha/Trecho.astro';
+import { copy } from '../config/copy.pt-BR';
+import { compliance } from '../config/compliance.config';
+import { nomeCompleto, profile, registroProfissional, whatsappUrl } from '../config/profile.config';
+
+const h = copy.hero;
+---
+<section class="hero" aria-labelledby="hero-titulo">
+  <div class="hero__fundo" aria-hidden="true"></div>
+  <Container class="trilha hero__conteudo">
+    <Trecho forma="inicio" lado={-1} hero />
+    <div class="hero__grade grade">
+      <div class="hero__texto">
+        <p class="hero__credencial" style="--i:0">
+          <span class="hero__nome">{nomeCompleto}</span>
+          <span class="hero__registro">{profile.especialidade} · {registroProfissional}</span>
+        </p>
+        <Eyebrow>{h.eyebrow}</Eyebrow>
+        <h1 id="hero-titulo" style="--i:1">{h.titulo}</h1>
+        <p class="hero__lead" style="--i:2">{h.texto}</p>
+        <div class="hero__acoes" style="--i:3">
+          <Button href={whatsappUrl} icone="whatsapp">{h.ctaPrimario}</Button>
+          <Button href={h.ctaSecundarioHref} variante="secundario">{h.ctaSecundario}</Button>
+        </div>
+        <p class="hero__aviso" style="--i:4">{compliance.avisoWhatsapp}</p>
+      </div>
+      <div class="hero__retrato" style="--i:2">
+        <PortraitFrame prioridade />
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+  }
+  /* O padding fica na grade (não na seção) para a trilha ocupar o hero inteiro e emendar na próxima seção. */
+  .hero__grade { padding-block: var(--esp-6) var(--esp-9); }
+  /* Papel creme com gradiente teal→lilás muito suave e grão leve: só CSS, sem imagem. */
+  .hero__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 55% at 88% 12%, color-mix(in srgb, var(--cor-acento) 16%, transparent), transparent 70%),
+      radial-gradient(55% 60% at 6% 96%, color-mix(in srgb, var(--cor-primaria) 13%, transparent), transparent 70%),
+      var(--cor-fundo);
+  }
+  .hero__fundo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  }
+  .hero__grade { align-items: end; row-gap: var(--esp-7); }
+  .hero__texto { display: grid; gap: var(--esp-5); justify-items: start; }
+  .hero__texto h1 { max-inline-size: 15ch; font-size: var(--fs-5); }
+  .hero__credencial { display: grid; gap: 0.1rem; font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .hero__nome { font-family: var(--fonte-display); font-size: var(--fs-2); color: var(--cor-texto); line-height: 1.1; }
+  .hero__lead { font-size: var(--fs-1); color: var(--cor-texto-suave); max-inline-size: 42ch; }
+  .hero__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-4); }
+  .hero__aviso { font-size: var(--fs-n1); color: var(--cor-texto-suave); max-inline-size: 48ch; }
+  .hero__retrato { display: flex; justify-content: center; }
+
+  @media (min-width: 48rem) {
+    .hero__grade { padding-block: var(--esp-7) var(--esp-9); }
+    /* Editorial assimétrico: texto ocupa 7 colunas, retrato desce deslocado nas colunas 9–12. */
+    .hero__texto { grid-column: 1 / span 7; }
+    .hero__retrato { grid-column: 9 / -1; justify-content: flex-start; align-self: end; margin-block-end: calc(-1 * var(--esp-6)); }
+  }
+
+  /* Entrada orquestrada: curta, só CSS. O h1 não usa opacidade (não atrasa o LCP). */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__texto > *, .hero__retrato {
+      animation: hero-entrar 520ms var(--mov-curva) both;
+      animation-delay: calc(var(--i, 0) * 70ms);
+    }
+    .hero__texto h1 { animation-name: hero-subir; }
+  }
+  @keyframes hero-entrar { from { opacity: 0; transform: translateY(0.6rem); } }
+  @keyframes hero-subir { from { transform: translateY(0.6rem); } }
+</style>

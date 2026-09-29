@@ -8,13 +8,16 @@ interface Props {
   eyebrow?: string;
   tom?: 'fundo' | 'superficie' | 'alt';
   largura?: 'texto' | 'padrao' | 'larga';
+  /** Reserva a trilha lateral da Linha da Vida (slot "trilha"). */
+  trilha?: boolean;
   class?: string;
 }
-const { id, titulo, eyebrow, tom = 'fundo', largura = 'padrao', class: cls } = Astro.props;
+const { id, titulo, eyebrow, tom = 'fundo', largura = 'padrao', trilha = false, class: cls } = Astro.props;
 const tituloId = titulo && id ? `${id}-titulo` : undefined;
 ---
 <section id={id} class:list={['secao', `secao--${tom}`, cls]} aria-labelledby={tituloId}>
-  <Container largura={largura}>
+  <Container largura={largura} class={trilha ? 'trilha' : undefined}>
+    <slot name="trilha" />
     {(titulo || eyebrow) && (
       <header class="secao__cabecalho">
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -25,8 +28,8 @@ const tituloId = titulo && id ? `${id}-titulo` : undefined;
   </Container>
 </section>
 <style>
-  .secao { padding-block: var(--esp-9); scroll-margin-top: var(--esp-7); }
+  .secao { --secao-pad: var(--esp-9); padding-block: var(--secao-pad); scroll-margin-top: var(--esp-5); }
   .secao--superficie { background: var(--cor-superficie); }
   .secao--alt { background: var(--cor-superficie-alt); }
-  .secao__cabecalho { display: grid; gap: var(--esp-3); margin-bottom: var(--esp-7); }
+  .secao__cabecalho { display: grid; gap: var(--esp-3); margin-bottom: var(--esp-6); }
 </style>

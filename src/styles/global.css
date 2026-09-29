@@ -63,3 +63,11 @@ a { color: var(--cor-primaria); text-underline-offset: 0.2em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Trilha lateral da Linha da Vida: reserva a coluna à esquerda do conteúdo. */
+@media (min-width: 64rem) { :root { --trilha: var(--trilha-desktop); } }
+/* Especificidade extra para vencer o padding escopado do <Container>. */
+.container.trilha.trilha {
+  position: relative;
+  padding-inline-start: calc(var(--margem-pagina) + var(--trilha) + var(--esp-4));
+}

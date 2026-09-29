@@ -1,5 +1,5 @@
 ---
-interface Props { largura?: 'texto' | 'padrao' | 'larga'; as?: 'div' | 'header' | 'footer' | 'nav'; class?: string }
+interface Props { largura?: 'texto' | 'padrao' | 'larga'; as?: 'div' | 'header' | 'footer' | 'nav'; class?: string | undefined }
 const { largura = 'padrao', as: Tag = 'div', class: cls } = Astro.props;
 ---
 <Tag class:list={['container', `container--${largura}`, cls]}><slot /></Tag>

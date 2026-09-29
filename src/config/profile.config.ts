@@ -39,6 +39,17 @@ export interface Profile {
   atendeParticular: boolean | typeof CONFIRMAR;
   dominio: string;
   idioma: string;
+  /**
+   * Retrato. `arquivo` é o nome do arquivo em src/assets/retrato/ (null = usa a ilustração de linha).
+   * Para trocar por uma foto profissional: substitua o arquivo e ajuste `tratamento`; o layout não muda.
+   */
+  retrato: {
+    arquivo: string | null;
+    alt: string;
+    tratamento: 'duotone' | 'natural';
+    /** Ampliação máxima em relação ao tamanho real do arquivo (evita upscale visível). */
+    ampliacaoMax: number;
+  };
 }
 
 export const profile: Profile = {
@@ -63,7 +74,7 @@ export const profile: Profile = {
   // A mensagem padrão NUNCA pede sintoma ou dado clínico (LGPD).
   whatsapp: {
     e164: CONFIRMAR,
-    mensagemPadrao: 'Olá! Gostaria de agendar uma consulta.',
+    mensagemPadrao: 'Olá, gostaria de agendar uma consulta.',
   },
   instagram: { usuario: CONFIRMAR, url: CONFIRMAR },
   googleBusiness: { placeId: CONFIRMAR, urlAvaliar: CONFIRMAR },
@@ -71,6 +82,13 @@ export const profile: Profile = {
   atendeParticular: CONFIRMAR,
   dominio: 'https://example.com',
   idioma: 'pt-BR',
+  retrato: {
+    // Fonte atual: 150×150 px (baixa resolução) → duotone + grão, tamanho contido.
+    arquivo: 'dra-nicole.jpg',
+    alt: 'Retrato da Dra. Nicole V. Zanette',
+    tratamento: 'duotone',
+    ampliacaoMax: 1.5,
+  },
 };
 
 export const nomeCompleto = [profile.tratamento, profile.nome].filter(Boolean).join(' ');

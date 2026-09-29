@@ -7,6 +7,8 @@ import { profile } from '../config/profile.config';
 import { theme } from '../config/theme.config';
 import Container from '../components/Container.astro';
 import Link from '../components/Link.astro';
+import fonteDisplay from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
+import fonteTexto from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
 interface Props { titulo?: string; descricao?: string }
 const { titulo, descricao = copy.meta.descricao } = Astro.props;
@@ -19,6 +21,8 @@ const tokens = gerarTokensCss();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" href={fonteDisplay} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fonteTexto} as="font" type="font/woff2" crossorigin />
     <title>{tituloFinal}</title>
     <meta name="description" content={descricao} />
     <link rel="canonical" href={canonical} />
@@ -49,7 +53,7 @@ const tokens = gerarTokensCss();
   </body>
 </html>
 <style>
-  .topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-4); padding-block: var(--esp-5); }
+  :global(.topo) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-4); padding-block: var(--esp-5); }
   .topo__marca { font-family: var(--fonte-display); font-size: var(--fs-2); color: var(--cor-texto); text-decoration: none; }
   .topo__nav { display: flex; gap: var(--esp-5); list-style: none; padding: 0; }
   .rodape { background: var(--cor-superficie-alt); padding-block: var(--esp-8); font-size: var(--fs-n1); color: var(--cor-texto-suave); }

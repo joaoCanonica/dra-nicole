@@ -20,3 +20,13 @@ npm run build          # validate (--build) + astro build
 ```
 
 Node 22 e npm 10 estão fixados em `engines`, `packageManager` e `.nvmrc`.
+
+## Assinatura visual: Linha da Vida
+
+- `src/lib/linha.ts` define a geometria de cada trecho (`inicio`, `onda`, `ventre`, `fim`). Todo trecho entra e sai no centro da trilha, na vertical, então os trechos se emendam numa linha contínua.
+- `src/components/linha/Trecho.astro` vai no slot `trilha` de `<Section trilha>`. Com CSS scroll-driven (`view-timeline`) a linha se desenha com o scroll. Sem suporte, entra um fallback com IntersectionObserver. Sem JS ou com `prefers-reduced-motion`, a linha aparece inteira e estática.
+- Os marcos das seções vêm de `copy.marcos.itens`. A gestação usa a curva de ventre.
+
+## Retrato
+
+`<PortraitFrame>` lê `profile.retrato`. O arquivo fica em `src/assets/retrato/`. A largura exibida é calculada a partir da resolução real do arquivo, limitada por `ampliacaoMax`, para a foto nunca ser ampliada de forma visível. Para usar uma foto profissional, basta trocar o arquivo e usar `tratamento: 'natural'`, sem mexer no layout. Com `arquivo: null`, aparece a ilustração de linha.

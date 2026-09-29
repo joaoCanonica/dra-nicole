@@ -95,6 +95,12 @@ export const theme = {
     l: '0 18px 40px -12px rgb(20 35 31 / 0.18)',
   },
 
+  /** Duotone do retrato: fixo nos dois modos, para a foto não inverter no tema escuro. */
+  retrato: { duoEscuro: '#1D5752', duoClaro: '#F8F3EA' },
+
+  /** Linha da Vida (assinatura visual). */
+  linha: { espessura: 1.5, larguraTrilhaDesktop: '6rem', larguraTrilhaMobile: '2rem' },
+
   movimento: {
     rapido: '150ms',
     medio: '280ms',

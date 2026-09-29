@@ -4,7 +4,7 @@
  *  - produção (--production, ou --build com VERCEL_ENV=production / SITE_ENV=production):
  *    falha se houver "CONFIRMAR" e compliance.bloquearDeploySeHouverConfirmar = true.
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'astro/zod';
 import { profile, CONFIRMAR } from '../src/config/profile.config';
@@ -45,6 +45,12 @@ const profileSchema = z.object({
   atendeParticular: z.union([z.literal(CONFIRMAR), z.boolean()]),
   dominio: z.string().url(),
   idioma: texto,
+  retrato: z.object({
+    arquivo: texto.nullable(),
+    alt: texto,
+    tratamento: z.enum(['duotone', 'natural']),
+    ampliacaoMax: z.number().min(1).max(2),
+  }),
 });
 
 const r = profileSchema.safeParse(profile);
@@ -55,6 +61,11 @@ if (!r.success) {
 // LGPD: mensagem padrão do WhatsApp não pode induzir envio de dado clínico.
 if (/sintoma|queixa|exame|dor|sangr/i.test(profile.whatsapp.mensagemPadrao)) {
   erros.push('profile.whatsapp.mensagemPadrao não pode pedir sintomas ou dados clínicos (LGPD).');
+}
+
+// Retrato: o arquivo declarado precisa existir.
+if (profile.retrato.arquivo && !existsSync(join('src/assets/retrato', profile.retrato.arquivo))) {
+  erros.push(`profile.retrato.arquivo: src/assets/retrato/${profile.retrato.arquivo} não encontrado.`);
 }
 
 // Contraste

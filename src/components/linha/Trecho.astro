@@ -1,0 +1,117 @@
+---
+/**
+ * Um trecho da Linha da Vida. Vai no slot "trilha" de <Section trilha> (ou no hero).
+ * Sem JS: linha desenhada. Com CSS scroll-driven: desenha com o scroll.
+ * Sem suporte: fallback com IntersectionObserver. Com reduced-motion: estática e completa.
+ */
+import { caminho, FIM_EM, type FormaTrecho, type Lado } from '../../lib/linha';
+
+interface Props {
+  forma?: FormaTrecho;
+  lado?: Lado;
+  /** Mostra o marco (ponto) no topo da seção. */
+  marco?: boolean;
+  hero?: boolean;
+}
+const { forma = 'onda', lado = 1, marco = false, hero = false } = Astro.props;
+const dDesk = caminho(forma, lado, 1);
+const dMob = caminho(forma, lado, 0);
+---
+<div class:list={['trecho', `trecho--${forma}`, { 'trecho--hero': hero }]} aria-hidden="true">
+  <svg class="trecho__svg trecho__svg--desk" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false">
+    <path d={dDesk} pathLength="1" />
+  </svg>
+  <svg class="trecho__svg trecho__svg--mob" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false">
+    <path d={dMob} pathLength="1" />
+  </svg>
+  {(marco || hero) && <span class="trecho__ponto trecho__ponto--marco" />}
+  {forma === 'fim' && <span class="trecho__ponto trecho__ponto--fim" style={`top:${FIM_EM / 10}%`} />}
+</div>
+
+<script>
+  // Fallback para navegadores sem scroll-driven animations (~0,4 KB).
+  const suporta = CSS.supports('animation-timeline: view()');
+  const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!suporta && !reduzido && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('linha-io');
+    const io = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add('trecho--visivel');
+          io.unobserve(e.target);
+        }
+      },
+      { rootMargin: '0px 0px -20% 0px' },
+    );
+    document.querySelectorAll('.trecho').forEach((el) => io.observe(el));
+  }
+</script>
+
+<style>
+  .trecho {
+    position: absolute;
+    top: calc(-1 * var(--secao-pad, 0px));
+    block-size: calc(100% + 2 * var(--secao-pad, 0px));
+    inset-inline-start: var(--margem-pagina);
+    inline-size: var(--trilha);
+    pointer-events: none;
+    view-timeline-name: --trecho;
+  }
+  .trecho--hero { top: 0; block-size: 100%; }
+  .trecho__svg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; }
+  .trecho__svg--desk { display: none; }
+  @media (min-width: 64rem) {
+    .trecho__svg--desk { display: block; }
+    .trecho__svg--mob { display: none; }
+  }
+  path {
+    fill: none;
+    stroke: var(--cor-acento);
+    stroke-width: var(--linha-espessura);
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+  .trecho__ponto {
+    position: absolute;
+    inset-inline-start: 50%;
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+    margin-inline-start: -0.4rem;
+    margin-block-start: -0.4rem;
+    border-radius: 50%;
+    background: var(--cor-fundo);
+    border: 1.5px solid var(--cor-acento);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--cor-acento) 14%, transparent);
+  }
+  /* O marco fica alinhado ao eyebrow da seção (trecho reto até 30%). */
+  .trecho__ponto--marco { top: calc(var(--secao-pad, 0px) + 0.8rem); }
+  .trecho--hero .trecho__ponto--marco { top: 12%; }
+  .trecho__ponto--fim { background: var(--cor-acento); inline-size: 0.9rem; block-size: 0.9rem; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      path {
+        animation: linha-desenhar linear both;
+        animation-timeline: --trecho;
+        animation-range: entry 15% cover 55%;
+      }
+      .trecho--hero path { animation-range: cover 0% cover 80%; }
+      .trecho__ponto {
+        animation: linha-pousar linear both;
+        animation-timeline: --trecho;
+        animation-range: entry 20% entry 60%;
+      }
+      .trecho--hero .trecho__ponto { animation: none; }
+      .trecho__ponto--fim { animation-range: cover 40% cover 55%; }
+    }
+    :global(.linha-io) path { stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--mov-curva); }
+    :global(.linha-io) .trecho__ponto { transform: scale(0); transition: transform var(--mov-medio) var(--mov-curva) 0.3s; }
+    :global(.linha-io) .trecho--visivel path { stroke-dashoffset: 0; }
+    :global(.linha-io) .trecho--visivel .trecho__ponto { transform: scale(1); }
+  }
+  @keyframes linha-desenhar { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes linha-pousar { from { transform: scale(0); } to { transform: scale(1); } }
+</style>

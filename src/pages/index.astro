@@ -1,55 +1,68 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
-import Container from '../components/Container.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
+import Trecho from '../components/linha/Trecho.astro';
 import { copy } from '../config/copy.pt-BR';
+import { profile, whatsappUrl } from '../config/profile.config';
 import { compliance } from '../config/compliance.config';
-import { whatsappUrl } from '../config/profile.config';
+import type { FormaTrecho, Lado } from '../lib/linha';
 
 const faq = (await getCollection('faq')).sort((a, b) => a.data.ordem - b.data.ordem);
+const c = copy.consulta;
+// Gestação recebe a curva de ventre; os demais alternam o lado da onda.
+const formaDoMarco = (id: string): FormaTrecho => (id === 'gestacao' ? 'ventre' : 'onda');
+const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
 ---
 <BaseLayout>
-  <Container class="hero grade">
-    <div class="col-8 hero__texto">
-      <Eyebrow>{copy.hero.eyebrow}</Eyebrow>
-      <h1>{copy.hero.titulo}</h1>
-      <p class="hero__lead">{copy.hero.texto}</p>
-      <div class="hero__acoes">
-        <Button href={whatsappUrl} icone="whatsapp">{copy.hero.ctaPrimario}</Button>
-        <Button href="#consulta" variante="secundario">{copy.hero.ctaSecundario}</Button>
-      </div>
-      <p class="hero__aviso">{compliance.avisoWhatsapp}</p>
-    </div>
-    <p class="col-4 hero__detalhe manuscrita" aria-hidden="true">{copy.hero.detalheManuscrito}</p>
-  </Container>
+  <Hero />
 
-  <Section id="consulta" eyebrow={copy.consulta.eyebrow} titulo={copy.consulta.titulo} tom="superficie">
+  {copy.marcos.itens.map((m, i) => (
+    <Section id={m.id} eyebrow={m.eyebrow} titulo={m.titulo} trilha class={`marco marco--${i % 2 ? 'dir' : 'esq'}`}>
+      <Trecho slot="trilha" forma={formaDoMarco(m.id)} lado={lado(i)} marco />
+      <p class="marco__texto">{m.texto}</p>
+    </Section>
+  ))}
+
+  <Section id="consulta" eyebrow={c.eyebrow} titulo={c.titulo} tom="alt" trilha>
+    <Trecho slot="trilha" forma="onda" lado={1} marco />
     <div class="grade">
-      <Card class="col-6"><h3>{copy.consulta.titulo}</h3><p>{copy.consulta.duracao}</p></Card>
-      <Card class="col-6">
-        <h3>O que levar</h3>
-        <ul>{copy.consulta.oQueLevar.map((i) => <li>{i}</li>)}</ul>
-      </Card>
+      <Card class="col-4"><h3>{c.duracaoTitulo}</h3><p>{c.duracao}</p></Card>
+      <Card class="col-4"><h3>{c.etapasTitulo}</h3><ul>{c.etapas.map((e) => <li>{e}</li>)}</ul></Card>
+      <Card class="col-4"><h3>{c.oQueLevarTitulo}</h3><ul>{c.oQueLevar.map((i) => <li>{i}</li>)}</ul></Card>
     </div>
   </Section>
 
-  <Section id="faq" titulo={copy.faq.titulo} largura="texto">
+  <Section id="faq" titulo={copy.faq.titulo} trilha>
+    <Trecho slot="trilha" forma="onda" lado={-1} />
     {faq.map((f) => (
       <details class="faq"><summary>{f.data.pergunta}</summary><p>{f.body}</p></details>
     ))}
   </Section>
+
+  <Section id="agendar" eyebrow={copy.ctaFinal.eyebrow} titulo={copy.ctaFinal.titulo} trilha class="cta-final">
+    <Trecho slot="trilha" forma="fim" lado={1} />
+    <p>{copy.ctaFinal.texto}</p>
+    <div class="cta-final__acoes">
+      <Button href={whatsappUrl} icone="whatsapp">{copy.ctaFinal.ctaPrimario}</Button>
+      <Button href={`tel:${profile.telefone.e164}`} icone="telefone" variante="secundario">{copy.ctaFinal.ctaTelefone}</Button>
+    </div>
+    <p class="cta-final__aviso">{compliance.avisoWhatsapp}</p>
+  </Section>
 </BaseLayout>
 <style>
-  .hero { padding-block: var(--esp-8) var(--esp-9); align-items: end; }
-  .hero__texto { display: grid; gap: var(--esp-5); }
-  .hero__lead { font-size: var(--fs-1); color: var(--cor-texto-suave); }
-  .hero__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-4); }
-  .hero__aviso { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
-  .hero__detalhe { font-size: var(--fs-5); text-align: end; opacity: 0.8; }
-  .faq { border-bottom: 1px solid var(--cor-borda); padding-block: var(--esp-4); }
+  :global(.marco .secao__cabecalho) { margin-bottom: var(--esp-4); }
+  .marco__texto { font-size: var(--fs-1); color: var(--cor-texto-suave); max-inline-size: 46ch; }
+  @media (min-width: 64rem) {
+    /* Composição editorial: marcos alternam entre a margem da linha e o centro. */
+    :global(.marco--dir .trilha > :not(.trecho)) { margin-inline-start: 30%; }
+  }
+  .faq { border-bottom: 1px solid var(--cor-borda); padding-block: var(--esp-3); max-inline-size: var(--medida-texto); }
   .faq summary { cursor: pointer; font-weight: 600; min-height: 2.75rem; display: flex; align-items: center; }
+  :global(.cta-final .trilha) { display: grid; gap: var(--esp-5); justify-items: start; }
+  .cta-final__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-4); }
+  .cta-final__aviso { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
 </style>

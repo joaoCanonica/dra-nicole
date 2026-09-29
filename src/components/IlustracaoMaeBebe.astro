@@ -1,0 +1,17 @@
+---
+/** Ilustração de linha (mulher + bebê). Fallback do retrato quando não há foto. */
+interface Props { titulo?: string }
+const { titulo } = Astro.props;
+---
+<svg class="ilustracao" viewBox="0 0 200 250" role={titulo ? 'img' : undefined} aria-label={titulo} aria-hidden={titulo ? undefined : 'true'} focusable="false">
+  <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M122 58c-21 0-35 17-35 37 0 18 11 31 27 35" />
+    <path d="M122 58c23 2 37 21 35 45-2 25-15 37-12 60" />
+    <path d="M114 130c0 12-4 21-16 27-27 13-45 36-49 73" />
+    <path d="M150 165c10 21 3 45-23 57-27 12-53 8-71-4" />
+    <path d="M95 164a18 18 0 1 1-.1 0" />
+    <path d="M112 190c15 6 29 4 39-6" />
+    <path d="M101 110c-3 3-3 7 0 9" />
+  </g>
+</svg>
+<style>.ilustracao { inline-size: 70%; block-size: auto; color: var(--duo-escuro); }</style>
