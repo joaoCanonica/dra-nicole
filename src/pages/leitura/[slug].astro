@@ -1,0 +1,81 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/Container.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+import Link from '../../components/Link.astro';
+import AvisoEmergencia from '../../components/AvisoEmergencia.astro';
+import { copy } from '../../config/copy.pt-BR';
+import { nomeCompleto, registroProfissional, whatsappUrl } from '../../config/profile.config';
+import { schemaArtigo } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const artigos = await getCollection('artigos', (a) => import.meta.env.DEV || !a.data.rascunho);
+  return artigos.map((artigo) => ({ params: { slug: artigo.id }, props: { artigo } }));
+}
+const { artigo } = Astro.props;
+const { Content } = await render(artigo);
+const l = copy.leitura;
+const d = artigo.data;
+const data = (x: Date) => x.toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: 'long', year: 'numeric' });
+const site = Astro.site ?? new URL(Astro.url.origin);
+const url = new URL(Astro.url.pathname, site);
+const jsonLd = JSON.stringify(schemaArtigo(artigo, url, site));
+---
+<BaseLayout titulo={d.titulo} descricao={d.resumo}>
+  <script type="application/ld+json" set:html={jsonLd} slot="head" />
+  <Container largura="texto" as="div" class="artigo-wrap">
+    <article class="artigo">
+      <header class="artigo__cabecalho">
+        <Eyebrow>{l.eyebrow}</Eyebrow>
+        <h1>{d.titulo}</h1>
+        <p class="artigo__resumo">{d.resumo}</p>
+        <p class="artigo__meta">
+          {l.publicadoEm} <time datetime={d.publicadoEm.toISOString().slice(0, 10)}>{data(d.publicadoEm)}</time>
+          · {l.revisadoEm} <time datetime={d.revisadoEm.toISOString().slice(0, 10)}>{data(d.revisadoEm)}</time>
+          {d.revisaoMedica !== 'aprovada' && <span class="pendente" data-confirmar> · {l.revisaoPendente}</span>}
+        </p>
+        <p class="artigo__aviso" role="note">{d.aviso}</p>
+      </header>
+
+      <div class="artigo__corpo"><Content /></div>
+
+      <section class="artigo__fontes" aria-labelledby="fontes-titulo">
+        <h2 id="fontes-titulo">{l.fontes}</h2>
+        <ol>
+          {d.fontes.map((f) => (
+            <li><Link href={f.url}>{f.nome}</Link> <span class="artigo__acesso">({l.acessoEm} {data(f.dataAcesso)})</span></li>
+          ))}
+        </ol>
+        <p class="artigo__responsavel">{nomeCompleto} · {registroProfissional}</p>
+      </section>
+
+      <aside class="artigo__cta">
+        <p>{l.cta}</p>
+        <Button href={whatsappUrl} icone="whatsapp" variante="secundario">{l.ctaBotao}</Button>
+      </aside>
+
+      <AvisoEmergencia compacto />
+      <Link href="/leitura/" sutil>← {l.voltar}</Link>
+    </article>
+  </Container>
+</BaseLayout>
+<style>
+  .artigo { display: grid; gap: var(--esp-6); padding-block: var(--esp-7) var(--esp-9); }
+  .artigo__cabecalho { display: grid; gap: var(--esp-4); }
+  .artigo__cabecalho h1 { font-size: var(--fs-4); }
+  .artigo__resumo { font-size: var(--fs-1); color: var(--cor-texto-suave); }
+  .artigo__meta { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .artigo__aviso { font-size: var(--fs-n1); padding: var(--esp-3) var(--esp-4); background: var(--cor-superficie-alt); border-radius: var(--raio-m); }
+  .artigo__corpo { display: grid; gap: var(--esp-4); font-size: var(--fs-0); }
+  .artigo__corpo :global(h2) { font-size: var(--fs-3); margin-block-start: var(--esp-4); }
+  .artigo__corpo :global(ul) { padding-inline-start: 1.2em; display: grid; gap: var(--esp-2); }
+  .artigo__fontes { display: grid; gap: var(--esp-3); padding-block-start: var(--esp-5); border-block-start: 1px solid var(--cor-borda); font-size: var(--fs-n1); }
+  .artigo__fontes h2 { font-size: var(--fs-2); }
+  .artigo__fontes ol { padding-inline-start: 1.2em; display: grid; gap: var(--esp-2); }
+  .artigo__acesso, .artigo__responsavel { color: var(--cor-texto-suave); }
+  .artigo__cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-4); padding: var(--esp-5) var(--esp-6); border-radius: var(--raio-l); background: var(--cor-superficie); border: 1px solid var(--cor-borda); }
+  .artigo__cta p { font-family: var(--fonte-display); font-size: var(--fs-2); }
+  .pendente { outline: 1px dashed var(--cor-rosa-seco); outline-offset: 2px; }
+</style>

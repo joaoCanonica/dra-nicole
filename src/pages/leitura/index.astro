@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import Card from '../../components/Card.astro';
+import Tag from '../../components/Tag.astro';
+import CalendarioCuidado from '../../components/CalendarioCuidado.astro';
+import { copy } from '../../config/copy.pt-BR';
+import { compliance } from '../../config/compliance.config';
+
+const l = copy.leitura;
+const artigos = (await getCollection('artigos', (a) => import.meta.env.DEV || !a.data.rascunho)).sort(
+  (a, b) => b.data.publicadoEm.valueOf() - a.data.publicadoEm.valueOf() || a.data.titulo.localeCompare(b.data.titulo),
+);
+const minutos = (corpo = '') => Math.max(1, Math.round(corpo.split(/\s+/).filter(Boolean).length / 200));
+---
+<BaseLayout titulo={l.eyebrow} descricao={l.descricao}>
+  <Section id="leitura" eyebrow={l.eyebrow} titulo={l.titulo}>
+    <p class="leitura__intro">{l.descricao}</p>
+    <ul class="grade leitura__lista" role="list">
+      {artigos.map((a) => (
+        <Card as="li" class="col-4" href={`/leitura/${a.id}/`}>
+          <Tag slot="topo">{`${minutos(a.body)} ${l.tempoLeitura}`}</Tag>
+          <h2 class="leitura__titulo">{a.data.titulo}</h2>
+          <p>{a.data.resumo}</p>
+          <Fragment slot="rotulo-link">{l.lerMais}: {a.data.titulo}</Fragment>
+        </Card>
+      ))}
+    </ul>
+    <p class="leitura__aviso">{compliance.avisoConteudo}</p>
+  </Section>
+
+  <Section id="calendario" eyebrow={copy.calendario.eyebrow} titulo={copy.calendario.titulo} tom="alt">
+    <p class="leitura__intro">{copy.calendario.texto}</p>
+    <CalendarioCuidado />
+  </Section>
+</BaseLayout>
+<style>
+  .leitura__intro { font-size: var(--fs-1); color: var(--cor-texto-suave); margin-block-end: var(--esp-6); }
+  .leitura__lista { list-style: none; padding: 0; }
+  .leitura__titulo { font-size: var(--fs-2); }
+  .leitura__aviso { margin-block-start: var(--esp-6); font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+</style>

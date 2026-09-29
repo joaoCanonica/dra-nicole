@@ -98,6 +98,9 @@ export const theme = {
   /** Duotone do retrato: fixo nos dois modos, para a foto não inverter no tema escuro. */
   retrato: { duoEscuro: '#1D5752', duoClaro: '#F8F3EA' },
 
+  /** Cores de campanhas de conscientização (só marcadores decorativos, nunca texto). */
+  campanhas: { amarelo: '#C9A227', dourado: '#B8893B' },
+
   /** Linha da Vida (assinatura visual). */
   linha: { espessura: 1.5, larguraTrilhaDesktop: '6rem', larguraTrilhaMobile: '2rem' },
 

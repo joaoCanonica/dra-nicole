@@ -34,6 +34,7 @@ const tokens = gerarTokensCss();
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={profile.idioma.replace('-', '_')} />
     <style is:inline set:html={tokens}></style>
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#conteudo">{copy.a11y.pularParaConteudo}</a>

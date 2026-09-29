@@ -1,0 +1,49 @@
+---
+/** Calendário de cuidado: datas de src/config/calendario.config.ts, cada uma ligada a um artigo. */
+import { calendario } from '../config/calendario.config';
+import { copy } from '../config/copy.pt-BR';
+
+interface Props { rotaLeitura?: string }
+const { rotaLeitura = '/leitura/' } = Astro.props;
+const c = copy.calendario;
+const meses = c.meses
+  .map((nome, i) => ({ nome, datas: calendario.filter((d) => d.mes === i + 1).sort((a, b) => (a.dia ?? 0) - (b.dia ?? 0)) }))
+  .filter((m) => m.datas.length > 0);
+---
+<ol class="calendario" role="list">
+  {meses.map((m) => (
+    <li class="calendario__mes">
+      <h3 class="calendario__nome-mes">{m.nome}</h3>
+      <ul role="list">
+        {m.datas.map((d) => (
+          <li class:list={['calendario__data', `calendario__data--${d.cor}`]}>
+            <p class="calendario__quando">{d.dia ? `${d.dia} de ${m.nome.toLowerCase()}` : c.mesTodo}</p>
+            <p class="calendario__titulo">{d.nome}</p>
+            <p class="calendario__tema">{d.tema}</p>
+            {d.artigo && <a class="calendario__link" href={`${rotaLeitura}${d.artigo}/`}>{c.leia}<span class="visually-hidden">: {d.tema}</span></a>}
+          </li>
+        ))}
+      </ul>
+    </li>
+  ))}
+</ol>
+<style>
+  .calendario { list-style: none; padding: 0; display: grid; gap: var(--esp-5); grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  .calendario__mes ul { list-style: none; padding: 0; display: grid; gap: var(--esp-3); }
+  .calendario__nome-mes { font-size: var(--fs-2); margin-block-end: var(--esp-3); border-block-end: 1px solid var(--cor-borda); padding-block-end: var(--esp-2); }
+  .calendario__data {
+    --marca: var(--cor-primaria);
+    padding: var(--esp-4) var(--esp-5); background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda); border-inline-start: 4px solid var(--marca); border-radius: var(--raio-m);
+    display: grid; gap: var(--esp-1);
+  }
+  .calendario__data--lilas { --marca: var(--cor-acento); }
+  .calendario__data--rosa { --marca: var(--cor-rosa-seco); }
+  .calendario__data--amarelo { --marca: var(--cor-campanha-amarelo); }
+  .calendario__data--dourado { --marca: var(--cor-campanha-dourado); }
+  .calendario__data--agua { --marca: var(--cor-primaria); }
+  .calendario__quando { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .calendario__titulo { font-family: var(--fonte-display); font-size: var(--fs-1); font-weight: 600; }
+  .calendario__tema { font-size: var(--fs-n1); }
+  .calendario__link { font-size: var(--fs-n1); font-weight: 600; min-block-size: 1.5rem; }
+</style>

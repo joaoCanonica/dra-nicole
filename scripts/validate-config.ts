@@ -14,6 +14,7 @@ import { theme } from '../src/config/theme.config';
 import { compliance } from '../src/config/compliance.config';
 import { copy } from '../src/config/copy.pt-BR';
 import { contraste } from '../src/lib/color';
+import { calendario } from '../src/config/calendario.config';
 
 const args = process.argv.slice(2);
 const producao =
@@ -118,10 +119,35 @@ for (const f of arquivos('src/content')) {
   });
 }
 
+// Artigos: tamanho (palavras do corpo) e fontes presentes.
+const dirArtigos = 'src/content/artigos';
+const idsArtigos = new Set<string>();
+for (const f of readdirSync(dirArtigos).filter((n) => /\.mdx?$/.test(n))) {
+  idsArtigos.add(f.replace(/\.mdx?$/, ''));
+  const bruto = readFileSync(join(dirArtigos, f), 'utf8');
+  if (/^rascunho:\s*true/m.test(bruto)) continue;
+  const corpo = bruto.replace(/^---[\s\S]*?\n---/, '');
+  const n = corpo.split(/\s+/).filter(Boolean).length;
+  const { palavrasMin, palavrasMax } = compliance.artigos;
+  if (n < palavrasMin || n > palavrasMax) erros.push(`${f}: ${n} palavras (esperado ${palavrasMin}–${palavrasMax}).`);
+  if (!/^fontes:/m.test(bruto)) erros.push(`${f}: sem bloco "fontes".`);
+}
+
+// Calendário: todo artigo referenciado precisa existir.
+for (const d of calendario) {
+  if (d.artigo && !idsArtigos.has(d.artigo)) erros.push(`calendario.${d.id}: artigo "${d.artigo}" não existe em ${dirArtigos}.`);
+}
+
 // Publicidade médica: termos proibidos.
+const ehCitacao = (linha: string) => /^\s*(-\s*)?(nome|url):/.test(linha);
 for (const termo of compliance.termosProibidos) {
-  const re = new RegExp(`(^|[^\\p{L}])${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'iu');
-  for (const t of textos) if (re.test(t.texto)) erros.push(`termo proibido "${termo}" em ${t.onde}: "${t.texto.trim()}"`);
+  const prefixo = termo.endsWith('*');
+  const base = termo.replace(/\*$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(^|[^\\p{L}])${base}${prefixo ? '' : '(?![\\p{L}])'}`, 'iu');
+  for (const t of textos) {
+    if (ehCitacao(t.texto)) continue;
+    if (re.test(t.texto)) erros.push(`termo proibido "${termo}" em ${t.onde}: "${t.texto.trim()}"`);
+  }
 }
 
 // CONFIRMAR rastreável.

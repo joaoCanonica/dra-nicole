@@ -41,6 +41,8 @@ export function gerarTokensCss(): string {
     --grade-gutter: ${t.grade.gutter};
     --largura-max: ${t.grade.larguraMax};
     --margem-pagina: ${t.grade.margem};
+    --cor-campanha-amarelo: ${t.campanhas.amarelo};
+    --cor-campanha-dourado: ${t.campanhas.dourado};
     --duo-escuro: ${t.retrato.duoEscuro};
     --duo-claro: ${t.retrato.duoClaro};
     --linha-espessura: ${t.linha.espessura};

@@ -34,9 +34,25 @@ export const compliance = {
       'Este guia só ajuda a se preparar para a consulta. Ele não faz triagem, não indica diagnóstico nem tratamento, e nada do que você escolhe aqui é enviado ou guardado.',
   },
 
+  /**
+   * Fontes aceitas nos artigos (host termina com um destes domínios).
+   * Ministério da Saúde e órgãos (gov.br, Fiocruz), INCA, FEBRASGO, SBP, OMS/OPAS, SBMFC, SBIm, SBM.
+   */
+  fontesPermitidas: [
+    'gov.br', 'fiocruz.br', 'febrasgo.org.br', 'sbp.com.br', 'who.int', 'paho.org',
+    'sbmfc.org.br', 'sbim.org.br', 'sbmastologia.com.br',
+    'bvs.br', // BIREME/OPAS (Biblioteca Virtual em Saúde)
+  ],
+
+  artigos: {
+    avisoPadrao: 'Conteúdo informativo; não substitui consulta.',
+    palavrasMin: 400,
+    palavrasMax: 700,
+  },
+
   /** Termos proibidos em copy e conteúdo (Res. CFM 2.336/2023). O validador falha se aparecerem. */
   termosProibidos: [
-    'melhor', 'melhores', 'referência', 'líder', 'renomad', 'excelência', 'garant', '100%',
+    'melhor', 'melhores', 'referência', 'líder', 'renomad*', 'excelência', 'garant*', '100%',
     'cura definitiva', 'sem dor', 'depoimento', 'resultado garantido', 'promoção', 'desconto', 'sorteio', 'antes e depois',
   ],
 
