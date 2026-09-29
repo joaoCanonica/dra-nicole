@@ -64,7 +64,8 @@ const rotuloEnviar = destino === 'mailto' ? f.enviarEmail : destino === 'endpoin
 <script>
   // Só para destino "whatsapp": monta a mensagem neutra e abre o WhatsApp. Nada é enviado a outro lugar.
   const form = document.querySelector<HTMLFormElement>('[data-form-contato][data-destino="whatsapp"]');
-  if (form) {
+  // Sem número configurado (base não é wa.me), o botão continua desativado.
+  if (form && form.dataset.base?.startsWith('https://wa.me/')) {
     form.querySelector<HTMLButtonElement>('button[type="submit"]')?.removeAttribute('disabled');
     form.addEventListener('submit', (e) => {
       e.preventDefault();

@@ -8,10 +8,12 @@ import { copy } from '../config/copy.pt-BR';
 import { linkWhatsapp, telefoneUrl } from '../config/profile.config';
 
 const b = copy.barraContato;
+const wa = linkWhatsapp();
+const externo = wa.startsWith('https://');
 ---
 <nav class="barra-contato" aria-label={b.rotulo}>
-  <a class="barra-contato__btn barra-contato__btn--wa" href={linkWhatsapp()} target="_blank" rel="noopener noreferrer" data-evento="whatsapp" data-origem="barra-mobile">
-    <Icon nome="whatsapp" /> <span>{b.whatsapp}</span><span class="visually-hidden"> {copy.a11y.abreEmNovaAba}</span>
+  <a class="barra-contato__btn barra-contato__btn--wa" href={wa} {...(externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})} data-evento="whatsapp" data-origem="barra-mobile">
+    <Icon nome="whatsapp" /> <span>{b.whatsapp}</span>{externo && <span class="visually-hidden"> {copy.a11y.abreEmNovaAba}</span>}
   </a>
   <a class="barra-contato__btn" href={telefoneUrl} data-evento="telefone" data-origem="barra-mobile">
     <Icon nome="telefone" /> <span>{b.ligar}</span>

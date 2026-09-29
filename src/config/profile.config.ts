@@ -117,9 +117,13 @@ export const registroProfissional = `CRM-${profile.crm.uf} ${profile.crm.numero}
   profile.rqe.length ? ` · RQE ${profile.rqe.join(', ')}` : ''
 }`;
 /** Link do WhatsApp com mensagem neutra (nunca inclui dado clínico). */
+/** Enquanto o número não for preenchido, os botões levam para /contato/ em vez de gerar link quebrado. */
+const SEM_NUMERO = '/contato/';
 export function linkWhatsapp(mensagem: string = profile.whatsapp.mensagemPadrao): string {
+  if (profile.whatsapp.numero === CONFIRMAR) return SEM_NUMERO;
   const numero = `${profile.whatsapp.ddi}${profile.whatsapp.numero}`.replace(/\D/g, '');
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 }
 export const whatsappUrl = linkWhatsapp();
-export const telefoneUrl = `tel:${profile.telefone.e164.replace(/[^\d+]/g, '') || profile.telefone.e164}`;
+export const telefoneUrl =
+  profile.telefone.e164 === CONFIRMAR ? SEM_NUMERO : `tel:${profile.telefone.e164.replace(/[^\d+]/g, '')}`;
