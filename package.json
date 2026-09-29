@@ -12,6 +12,7 @@
     "dev": "astro dev",
     "validate": "tsx scripts/validate-config.ts",
     "validate:prod": "tsx scripts/validate-config.ts --production",
+    "pendencias": "tsx scripts/validate-config.ts --relatorio",
     "check": "npm run validate && astro check",
     "build": "tsx scripts/validate-config.ts --build && astro build",
     "preview": "astro preview"

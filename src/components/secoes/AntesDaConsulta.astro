@@ -1,0 +1,42 @@
+---
+/** "Antes da sua consulta": passo a passo curto, legível em ~60 s. */
+import Texto from '../Texto.astro';
+import { copy } from '../../config/copy.pt-BR';
+
+const c = copy.consulta;
+---
+<div class="antes">
+  <p class="antes__convite">
+    <strong>{c.convite}</strong> {c.conviteTexto}
+  </p>
+  <p class="antes__duracao"><span>{c.duracaoRotulo}:</span> <Texto valor={c.duracao} /></p>
+  <ol class="antes__passos">
+    {c.passos.map((p, i) => (
+      <li class="antes__passo">
+        <span class="antes__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h3>{p.titulo}</h3>
+          {'texto' in p && <Texto as="p" valor={p.texto} />}
+          {'itens' in p && <ul>{p.itens.map((item) => <li>{item}</li>)}</ul>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</div>
+<style>
+  .antes { display: grid; gap: var(--esp-6); }
+  .antes__convite {
+    font-size: var(--fs-1); padding: var(--esp-5) var(--esp-6);
+    background: var(--cor-superficie); border-radius: var(--raio-l); border-inline-start: 3px solid var(--cor-acento);
+    max-inline-size: none;
+  }
+  .antes__convite strong { font-family: var(--fonte-display); font-size: var(--fs-2); font-weight: 600; display: block; }
+  .antes__duracao span { font-weight: 700; }
+  .antes__passos { list-style: none; padding: 0; display: grid; gap: var(--esp-6); counter-reset: none; }
+  @media (min-width: 48rem) { .antes__passos { grid-template-columns: repeat(2, 1fr); column-gap: var(--esp-8); } }
+  @media (min-width: 72rem) { .antes__passos { grid-template-columns: repeat(3, 1fr); } }
+  .antes__passo { display: grid; grid-template-columns: auto 1fr; gap: var(--esp-4); align-items: start; }
+  .antes__num { font-family: var(--fonte-display); font-size: var(--fs-3); line-height: 1; color: var(--cor-acento-texto); }
+  .antes__passo h3 { font-size: var(--fs-2); margin-block-end: var(--esp-2); }
+  .antes__passo ul { padding-inline-start: 1.1em; }
+</style>

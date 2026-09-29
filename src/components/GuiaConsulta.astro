@@ -1,0 +1,91 @@
+---
+/**
+ * "Qual consulta é para mim?" — guia 100% CSS (radio + :has). Zero JS, nada é enviado
+ * nem armazenado: os radios não estão em nenhum <form>.
+ * Sem suporte a :has(), todos os painéis ficam visíveis (conteúdo continua acessível).
+ */
+import AvisoEmergencia from './AvisoEmergencia.astro';
+import { copy } from '../config/copy.pt-BR';
+import { compliance } from '../config/compliance.config';
+
+const g = copy.guia;
+const seletores = g.fases
+  .map((f) => `.guia:has([data-fase="${f.id}"]:checked) [data-painel="${f.id}"]`)
+  .join(',');
+const cssFases = `@supports selector(:has(*)){${seletores}{display:block}}`;
+---
+<style is:inline set:html={cssFases}></style>
+<div class="guia">
+  <fieldset class="guia__opcoes">
+    <legend>{g.legenda}</legend>
+    <p class="guia__instrucao">{g.instrucao}</p>
+    <div class="guia__chips">
+      {g.fases.map((f) => (
+        <label class="guia__chip">
+          <input type="radio" name="guia-fase" value={f.id} data-fase={f.id} aria-controls={`guia-${f.id}`} />
+          <span>{f.rotulo}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="guia__paineis">
+    {g.fases.map((f) => (
+      <section class="guia__painel" id={`guia-${f.id}`} data-painel={f.id} aria-label={f.rotulo}>
+        <h3 class="guia__painel-titulo">{f.rotulo}</h3>
+        <dl>
+          <div><dt>{g.rotulos.tipo}</dt><dd>{f.tipo}</dd></div>
+          <div><dt>{g.rotulos.levar}</dt><dd><ul>{f.levar.map((i) => <li>{i}</li>)}</ul></dd></div>
+          <div><dt>{g.rotulos.pergunta}</dt><dd class="guia__pergunta">“{f.pergunta}”</dd></div>
+        </dl>
+      </section>
+    ))}
+  </div>
+
+  <p class="guia__aviso">{compliance.guia.aviso}</p>
+  <AvisoEmergencia compacto />
+</div>
+
+<style>
+  .guia { display: grid; gap: var(--esp-6); }
+  .guia__opcoes { border: 0; padding: 0; display: grid; gap: var(--esp-3); }
+  .guia__opcoes legend { font-family: var(--fonte-display); font-size: var(--fs-2); padding: 0; }
+  .guia__instrucao { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .guia__chips { display: flex; flex-wrap: wrap; gap: var(--esp-3); }
+  .guia__chip { position: relative; }
+  .guia__chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .guia__chip span {
+    display: inline-flex; align-items: center; min-block-size: 2.75rem;
+    padding: var(--esp-3) var(--esp-5);
+    border: 1.5px solid var(--cor-borda); border-radius: var(--raio-pilula);
+    background: var(--cor-superficie); font-weight: 600;
+    transition: background-color var(--mov-rapido) var(--mov-curva), border-color var(--mov-rapido) var(--mov-curva);
+  }
+  .guia__chip:hover span { border-color: var(--cor-primaria); }
+  .guia__chip input:checked + span { background: var(--cor-primaria); border-color: var(--cor-primaria); color: var(--cor-primaria-texto); }
+  .guia__chip input:focus-visible + span { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+
+  .guia__paineis { display: grid; gap: var(--esp-5); }
+  .guia__painel {
+    padding: var(--esp-6); border-radius: var(--raio-l);
+    background: var(--cor-superficie); border: 1px solid var(--cor-borda);
+  }
+  .guia__painel-titulo { font-size: var(--fs-2); margin-block-end: var(--esp-4); }
+  .guia__painel dl { display: grid; gap: var(--esp-5); }
+  @media (min-width: 48rem) { .guia__painel dl { grid-template-columns: 1fr 1fr 1fr; } }
+  .guia__painel dt { font-size: var(--fs-n1); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cor-acento-texto); margin-block-end: var(--esp-2); }
+  .guia__painel dd { margin: 0; }
+  .guia__painel ul { padding-inline-start: 1.1em; }
+  .guia__pergunta { font-family: var(--fonte-display); font-style: italic; font-size: var(--fs-1); }
+  .guia__aviso { font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+
+  /* Com :has(): mostra só o painel escolhido; antes da escolha, nenhum. */
+  @supports selector(:has(*)) {
+    .guia__painel { display: none; }
+    /* Regras por fase são geradas a partir do config (ver <style is:inline> acima). */
+    @media (prefers-reduced-motion: no-preference) {
+      .guia__painel { animation: guia-entrar var(--mov-medio) var(--mov-curva); }
+    }
+  }
+  @keyframes guia-entrar { from { opacity: 0; transform: translateY(0.4rem); } }
+</style>

@@ -4,15 +4,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import Button from '../components/Button.astro';
-import Card from '../components/Card.astro';
+import Texto from '../components/Texto.astro';
 import Trecho from '../components/linha/Trecho.astro';
+import Sobre from '../components/secoes/Sobre.astro';
+import AntesDaConsulta from '../components/secoes/AntesDaConsulta.astro';
+import Convenios from '../components/secoes/Convenios.astro';
+import GuiaConsulta from '../components/GuiaConsulta.astro';
 import { copy } from '../config/copy.pt-BR';
 import { profile, whatsappUrl } from '../config/profile.config';
 import { compliance } from '../config/compliance.config';
 import type { FormaTrecho, Lado } from '../lib/linha';
 
 const faq = (await getCollection('faq')).sort((a, b) => a.data.ordem - b.data.ordem);
-const c = copy.consulta;
 // Gestação recebe a curva de ventre; os demais alternam o lado da onda.
 const formaDoMarco = (id: string): FormaTrecho => (id === 'gestacao' ? 'ventre' : 'onda');
 const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
@@ -20,27 +23,50 @@ const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
 <BaseLayout>
   <Hero />
 
+  <Section id="sobre" eyebrow={copy.sobre.eyebrow} titulo={copy.sobre.titulo} trilha>
+    <Trecho slot="trilha" forma="onda" lado={1} />
+    <Sobre />
+  </Section>
+
+  <Section id="areas" eyebrow={copy.areas.eyebrow} titulo={copy.areas.titulo} trilha class="areas-intro">
+    <Trecho slot="trilha" forma="onda" lado={-1} />
+    <p class="marco__texto">{copy.areas.texto}</p>
+  </Section>
+
   {copy.marcos.itens.map((m, i) => (
     <Section id={m.id} eyebrow={m.eyebrow} titulo={m.titulo} trilha class={`marco marco--${i % 2 ? 'dir' : 'esq'}`}>
       <Trecho slot="trilha" forma={formaDoMarco(m.id)} lado={lado(i)} marco />
       <p class="marco__texto">{m.texto}</p>
+      <p class="marco__rotulo">{copy.areas.rotuloLista}</p>
+      <ul class="marco__lista">{m.acompanha.map((a) => <li>{a}</li>)}</ul>
     </Section>
   ))}
 
-  <Section id="consulta" eyebrow={c.eyebrow} titulo={c.titulo} tom="alt" trilha>
+  <Section id="consulta" eyebrow={copy.consulta.eyebrow} titulo={copy.consulta.titulo} tom="alt" trilha>
     <Trecho slot="trilha" forma="onda" lado={1} marco />
-    <div class="grade">
-      <Card class="col-4"><h3>{c.duracaoTitulo}</h3><p>{c.duracao}</p></Card>
-      <Card class="col-4"><h3>{c.etapasTitulo}</h3><ul>{c.etapas.map((e) => <li>{e}</li>)}</ul></Card>
-      <Card class="col-4"><h3>{c.oQueLevarTitulo}</h3><ul>{c.oQueLevar.map((i) => <li>{i}</li>)}</ul></Card>
-    </div>
+    <AntesDaConsulta />
   </Section>
 
-  <Section id="faq" titulo={copy.faq.titulo} trilha>
+  <Section id="guia" eyebrow={copy.guia.eyebrow} titulo={copy.guia.titulo} trilha>
     <Trecho slot="trilha" forma="onda" lado={-1} />
-    {faq.map((f) => (
-      <details class="faq"><summary>{f.data.pergunta}</summary><p>{f.body}</p></details>
-    ))}
+    <GuiaConsulta />
+  </Section>
+
+  <Section id="convenios" eyebrow={copy.convenios.eyebrow} titulo={copy.convenios.titulo} tom="superficie" trilha>
+    <Trecho slot="trilha" forma="onda" lado={1} />
+    <Convenios />
+  </Section>
+
+  <Section id="faq" eyebrow={copy.faq.eyebrow} titulo={copy.faq.titulo} trilha>
+    <Trecho slot="trilha" forma="onda" lado={-1} />
+    <div class="faq-lista">
+      {faq.map((f) => (
+        <details class="faq">
+          <summary>{f.data.pergunta}</summary>
+          <Texto as="p" valor={f.body ?? ''} />
+        </details>
+      ))}
+    </div>
   </Section>
 
   <Section id="agendar" eyebrow={copy.ctaFinal.eyebrow} titulo={copy.ctaFinal.titulo} trilha class="cta-final">
@@ -56,12 +82,17 @@ const lado = (i: number): Lado => (i % 2 === 0 ? 1 : -1);
 <style>
   :global(.marco .secao__cabecalho) { margin-bottom: var(--esp-4); }
   .marco__texto { font-size: var(--fs-1); color: var(--cor-texto-suave); max-inline-size: 46ch; }
+  .marco__rotulo { margin-block-start: var(--esp-5); font-size: var(--fs-n1); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cor-acento-texto); }
+  .marco__lista { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-3); list-style: none; padding: 0; margin-block-start: var(--esp-3); max-inline-size: 40rem; }
+  .marco__lista li { padding: var(--esp-2) var(--esp-4); border-radius: var(--raio-pilula); background: var(--cor-agua-suave); color: var(--cor-texto); font-size: var(--fs-n1); }
   @media (min-width: 64rem) {
     /* Composição editorial: marcos alternam entre a margem da linha e o centro. */
     :global(.marco--dir .trilha > :not(.trecho)) { margin-inline-start: 30%; }
   }
-  .faq { border-bottom: 1px solid var(--cor-borda); padding-block: var(--esp-3); max-inline-size: var(--medida-texto); }
+  .faq-lista { max-inline-size: var(--medida-texto); }
+  .faq { border-bottom: 1px solid var(--cor-borda); padding-block: var(--esp-3); }
   .faq summary { cursor: pointer; font-weight: 600; min-height: 2.75rem; display: flex; align-items: center; }
+  .faq :global(p) { padding-block: var(--esp-2) var(--esp-3); color: var(--cor-texto-suave); }
   :global(.cta-final .trilha) { display: grid; gap: var(--esp-5); justify-items: start; }
   .cta-final__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-4); }
   .cta-final__aviso { font-size: var(--fs-n1); color: var(--cor-texto-suave); }

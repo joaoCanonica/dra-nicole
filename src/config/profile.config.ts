@@ -43,6 +43,14 @@ export interface Profile {
    * Retrato. `arquivo` é o nome do arquivo em src/assets/retrato/ (null = usa a ilustração de linha).
    * Para trocar por uma foto profissional: substitua o arquivo e ajuste `tratamento`; o layout não muda.
    */
+  /** Formação e atuação. Só publicar o que a profissional confirmar. */
+  formacao: {
+    graduacao: string;
+    residencia: string;
+    titulos: string[];
+    sociedades: string[];
+    areasAtuacao: string[];
+  };
   retrato: {
     arquivo: string | null;
     alt: string;
@@ -82,6 +90,13 @@ export const profile: Profile = {
   atendeParticular: CONFIRMAR,
   dominio: 'https://example.com',
   idioma: 'pt-BR',
+  formacao: {
+    graduacao: `${CONFIRMAR}: curso, instituição e ano`,
+    residencia: `${CONFIRMAR}: residência em Ginecologia e Obstetrícia, instituição e ano`,
+    titulos: [`${CONFIRMAR}: título de especialista (ex.: TEGO/FEBRASGO), se houver`],
+    sociedades: [`${CONFIRMAR}: sociedades das quais é membro`],
+    areasAtuacao: [`${CONFIRMAR}: áreas de atuação registradas`],
+  },
   retrato: {
     // Fonte atual: 150×150 px (baixa resolução) → duotone + grão, tamanho contido.
     arquivo: 'dra-nicole.jpg',

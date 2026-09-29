@@ -1,0 +1,32 @@
+---
+/** Texto neutro gerado a partir de profile.convenios / atendeParticular. Sem comparações. */
+import Texto from '../Texto.astro';
+import { copy } from '../../config/copy.pt-BR';
+import { CONFIRMAR, profile } from '../../config/profile.config';
+
+const c = copy.convenios;
+const lista = profile.convenios === CONFIRMAR ? null : profile.convenios;
+const particular = profile.atendeParticular === CONFIRMAR ? null : profile.atendeParticular;
+const pendente = lista === null || particular === null;
+---
+<div class="convenios">
+  {pendente ? (
+    <Texto as="p" valor={c.pendente} />
+  ) : lista.length > 0 ? (
+    <>
+      <h3>{c.rotuloLista}</h3>
+      <ul class="convenios__lista">{lista.map((n) => <li>{n}</li>)}</ul>
+      <p>{c.comoAgendar}</p>
+      <p>{particular ? c.particular : c.somenteConvenio}</p>
+      <p>{c.duvidas}</p>
+    </>
+  ) : (
+    <p>{c.somenteParticular}</p>
+  )}
+</div>
+<style>
+  .convenios { display: grid; gap: var(--esp-4); }
+  .convenios h3 { font-size: var(--fs-2); }
+  .convenios__lista { display: flex; flex-wrap: wrap; gap: var(--esp-3); list-style: none; padding: 0; }
+  .convenios__lista li { padding: var(--esp-2) var(--esp-4); border: 1px solid var(--cor-borda); border-radius: var(--raio-pilula); background: var(--cor-superficie); }
+</style>

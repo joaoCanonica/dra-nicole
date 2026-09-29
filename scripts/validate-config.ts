@@ -2,9 +2,11 @@
  * Valida config e conteúdo.
  *  - sempre: campos obrigatórios presentes e contraste AA dos pares declarados;
  *  - produção (--production, ou --build com VERCEL_ENV=production / SITE_ENV=production):
- *    falha se houver "CONFIRMAR" e compliance.bloquearDeploySeHouverConfirmar = true.
+ *    falha se houver "CONFIRMAR" e compliance.bloquearDeploySeHouverConfirmar = true;
+ *  - sempre: falha se copy/config/conteúdo usar termo proibido (compliance.termosProibidos);
+ *  - --relatorio: grava docs/PENDENCIAS.md com todos os CONFIRMAR rastreáveis.
  */
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'astro/zod';
 import { profile, CONFIRMAR } from '../src/config/profile.config';
@@ -45,6 +47,13 @@ const profileSchema = z.object({
   atendeParticular: z.union([z.literal(CONFIRMAR), z.boolean()]),
   dominio: z.string().url(),
   idioma: texto,
+  formacao: z.object({
+    graduacao: texto,
+    residencia: texto,
+    titulos: z.array(texto),
+    sociedades: z.array(texto),
+    areasAtuacao: z.array(texto),
+  }),
   retrato: z.object({
     arquivo: texto.nullable(),
     alt: texto,
@@ -77,20 +86,22 @@ for (const modo of ['claro', 'escuro'] as const) {
   }
 }
 
-// CONFIRMAR em config e conteúdo
-function coletar(obj: unknown, caminho: string, saida: string[]): void {
-  if (typeof obj === 'string') {
-    if (obj.includes(CONFIRMAR)) saida.push(caminho);
-  } else if (Array.isArray(obj)) {
-    obj.forEach((v, i) => coletar(v, `${caminho}[${i}]`, saida));
-  } else if (obj && typeof obj === 'object') {
-    for (const [k, v] of Object.entries(obj)) coletar(v, `${caminho}.${k}`, saida);
+// Varre todos os textos de config e conteúdo publicado.
+type Ocorrencia = { onde: string; texto: string };
+const textos: Ocorrencia[] = [];
+function coletar(obj: unknown, caminho: string): void {
+  if (typeof obj === 'string') textos.push({ onde: caminho, texto: obj });
+  else if (Array.isArray(obj)) obj.forEach((v, i) => coletar(v, `${caminho}[${i}]`));
+  else if (obj && typeof obj === 'object') {
+    for (const [k, v] of Object.entries(obj)) {
+      if (caminho === 'compliance' && k === 'termosProibidos') continue;
+      coletar(v, `${caminho}.${k}`);
+    }
   }
 }
-const pendentes: string[] = [];
-coletar(profile, 'profile', pendentes);
-coletar(compliance, 'compliance', pendentes);
-coletar(copy, 'copy', pendentes);
+coletar(profile, 'profile');
+coletar(compliance, 'compliance');
+coletar(copy, 'copy');
 
 function arquivos(dir: string): string[] {
   return readdirSync(dir).flatMap((f) => {
@@ -102,13 +113,40 @@ for (const f of arquivos('src/content')) {
   const conteudo = readFileSync(f, 'utf8');
   // Rascunhos não são publicados, então não bloqueiam.
   if (/^rascunho:\s*true/m.test(conteudo)) continue;
-  if (conteudo.includes(CONFIRMAR)) pendentes.push(f);
+  conteudo.split('\n').forEach((linha, i) => {
+    if (linha.trim()) textos.push({ onde: `${f}:${i + 1}`, texto: linha });
+  });
 }
 
+// Publicidade médica: termos proibidos.
+for (const termo of compliance.termosProibidos) {
+  const re = new RegExp(`(^|[^\\p{L}])${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'iu');
+  for (const t of textos) if (re.test(t.texto)) erros.push(`termo proibido "${termo}" em ${t.onde}: "${t.texto.trim()}"`);
+}
+
+// CONFIRMAR rastreável.
+const pendentes = textos.filter((t) => t.texto.includes(CONFIRMAR));
 if (pendentes.length) {
-  const msg = `${pendentes.length} campo(s) com "${CONFIRMAR}":\n    ${pendentes.join('\n    ')}`;
+  const msg = `${pendentes.length} campo(s) com "${CONFIRMAR}" (npm run pendencias gera docs/PENDENCIAS.md):\n    ${pendentes
+    .map((p) => p.onde)
+    .join('\n    ')}`;
   if (producao && compliance.bloquearDeploySeHouverConfirmar) erros.push(msg);
   else avisos.push(msg);
+}
+
+if (args.includes('--relatorio')) {
+  const linhas = [
+    '# Pendências de confirmação',
+    '',
+    `Gerado por \`npm run pendencias\`. ${pendentes.length} item(ns). Enquanto houver itens aqui, o deploy de produção fica bloqueado.`,
+    '',
+    '| Onde | Texto atual |',
+    '|---|---|',
+    ...pendentes.map((p) => `| \`${p.onde}\` | ${p.texto.replace(/\|/g, '\\|').trim()} |`),
+    '',
+  ];
+  writeFileSync('docs/PENDENCIAS.md', linhas.join('\n'));
+  console.log('✔ docs/PENDENCIAS.md atualizado.');
 }
 
 for (const a of avisos) console.warn(`⚠ ${a}`);

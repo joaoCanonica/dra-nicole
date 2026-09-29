@@ -1,0 +1,33 @@
+---
+/** Aviso global de urgência. Texto em compliance.config. */
+import Icon from './Icon.astro';
+import { compliance } from '../config/compliance.config';
+
+interface Props { compacto?: boolean }
+const { compacto = false } = Astro.props;
+---
+<aside class:list={['emergencia', { 'emergencia--compacto': compacto }]} aria-label={compliance.avisoEmergenciaTitulo}>
+  <Icon nome="info" tamanho={22} />
+  <div>
+    <p class="emergencia__titulo">{compliance.avisoEmergenciaTitulo}</p>
+    <p>{compliance.avisoEmergencia}</p>
+    <a class="emergencia__tel" href={`tel:${compliance.samu.tel}`}>{compliance.samu.rotulo}</a>
+  </div>
+</aside>
+<style>
+  .emergencia {
+    display: flex; gap: var(--esp-4); align-items: start;
+    padding: var(--esp-5);
+    border: 1px solid var(--cor-rosa-seco);
+    border-inline-start-width: 4px;
+    border-radius: var(--raio-m);
+    background: var(--cor-superficie);
+    color: var(--cor-texto);
+    font-size: var(--fs-n1);
+  }
+  .emergencia :global(.icone) { color: var(--cor-acento-texto); margin-block-start: 0.1rem; }
+  .emergencia div { display: grid; gap: var(--esp-2); }
+  .emergencia__titulo { font-weight: 700; }
+  .emergencia__tel { color: var(--cor-primaria); font-weight: 600; min-block-size: 1.5rem; }
+  .emergencia--compacto { padding: var(--esp-4); }
+</style>

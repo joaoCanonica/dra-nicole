@@ -1,7 +1,7 @@
 ---
 pergunta: O que devo levar na consulta?
-ordem: 1
+ordem: 4
 grupo: consulta
 ---
 
-Documento com foto, carteirinha do convênio (se for o caso), exames anteriores e a lista de medicamentos em uso.
+Documento com foto, exames anteriores, lista de medicações em uso, suas dúvidas anotadas e a carteirinha do convênio, se for o caso.

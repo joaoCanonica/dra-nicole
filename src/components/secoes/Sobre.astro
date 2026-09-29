@@ -1,0 +1,40 @@
+---
+import Texto from '../Texto.astro';
+import { copy } from '../../config/copy.pt-BR';
+import { profile, registroProfissional } from '../../config/profile.config';
+
+const s = copy.sobre;
+const f = profile.formacao;
+const itens: { rotulo: string; valores: readonly string[] }[] = [
+  { rotulo: s.rotulos.registro, valores: [registroProfissional] },
+  { rotulo: s.rotulos.graduacao, valores: [f.graduacao] },
+  { rotulo: s.rotulos.residencia, valores: [f.residencia] },
+  { rotulo: s.rotulos.titulos, valores: f.titulos },
+  { rotulo: s.rotulos.sociedades, valores: f.sociedades },
+  { rotulo: s.rotulos.areasAtuacao, valores: f.areasAtuacao },
+].filter((i) => i.valores.length > 0);
+---
+<div class="sobre grade">
+  <div class="sobre__texto">
+    {s.paragrafos.map((p) => <Texto as="p" valor={p} />)}
+  </div>
+  <dl class="sobre__credenciais">
+    {itens.map((i) => (
+      <div>
+        <dt>{i.rotulo}</dt>
+        {i.valores.map((v) => <Texto as="dd" valor={v} />)}
+      </div>
+    ))}
+  </dl>
+</div>
+<style>
+  .sobre { row-gap: var(--esp-6); }
+  .sobre__texto { display: grid; gap: var(--esp-4); font-size: var(--fs-1); align-content: start; }
+  .sobre__credenciais { display: grid; gap: var(--esp-4); padding: var(--esp-6); background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio-l); }
+  .sobre__credenciais dt { font-size: var(--fs-n1); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cor-acento-texto); }
+  .sobre__credenciais dd { margin: 0; }
+  @media (min-width: 48rem) {
+    .sobre__texto { grid-column: 1 / span 6; }
+    .sobre__credenciais { grid-column: 8 / -1; }
+  }
+</style>

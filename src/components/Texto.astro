@@ -1,0 +1,26 @@
+---
+/**
+ * Renderiza um texto do config. Se contiver CONFIRMAR, marca visualmente como pendente
+ * (data-confirmar) para ficar rastreável na revisão. Em produção o build já é bloqueado
+ * pelo validador enquanto houver CONFIRMAR.
+ */
+import { CONFIRMAR } from '../config/profile.config';
+import { copy } from '../config/copy.pt-BR';
+
+interface Props { valor: string; as?: 'span' | 'p' | 'li' | 'dd'; class?: string }
+const { valor, as: Tag = 'span', class: cls } = Astro.props;
+const pendente = valor.includes(CONFIRMAR);
+---
+{pendente ? (
+  <Tag class:list={['pendente', cls]} data-confirmar title={copy.a11y.pendente}>{valor}</Tag>
+) : (
+  <Tag class={cls}>{valor}</Tag>
+)}
+<style>
+  .pendente {
+    background: repeating-linear-gradient(-45deg, transparent 0 6px, color-mix(in srgb, var(--cor-rosa-seco) 22%, transparent) 6px 12px);
+    outline: 1px dashed var(--cor-rosa-seco);
+    outline-offset: 2px;
+    border-radius: var(--raio-s);
+  }
+</style>

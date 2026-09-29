@@ -1,20 +1,27 @@
 import { CONFIRMAR, nomeCompleto, profile } from './profile.config';
 
-/** Todos os textos do site. Nada de texto solto em componente. */
+/**
+ * Todos os textos do site. Nada de texto solto em componente.
+ * Regras: sem promessa de resultado, sem superlativo, sem depoimento (o validador confere).
+ * Tudo que depende da Dra. leva CONFIRMAR e aparece em docs/PENDENCIAS.md (npm run pendencias).
+ */
 export const copy = {
   meta: {
     tituloPadrao: `${nomeCompleto} · ${profile.subtitulo}`,
     separador: ' · ',
-    descricao: `${nomeCompleto}, ${profile.especialidade.toLowerCase()} em ${profile.endereco.cidade}-${profile.endereco.uf}. Informações sobre a consulta, como agendar e conteúdos educativos com fonte.`,
+    descricao: `${nomeCompleto}, ${profile.especialidade.toLowerCase()} em ${profile.endereco.cidade}-${profile.endereco.uf}. Como funciona a consulta, o que levar, como agendar e conteúdos educativos com fonte.`,
   },
   a11y: {
     pularParaConteudo: 'Pular para o conteúdo',
     abreEmNovaAba: '(abre em nova aba)',
     menu: 'Menu principal',
+    pendente: 'Pendente de confirmação',
   },
   nav: [
-    { rotulo: 'Início', href: '/' },
-    { rotulo: 'Como funciona a consulta', href: '/#consulta' },
+    { rotulo: 'Sobre', href: '/#sobre' },
+    { rotulo: 'Antes da consulta', href: '/#consulta' },
+    { rotulo: 'Qual consulta?', href: '/#guia' },
+    { rotulo: 'Convênios', href: '/#convenios' },
     { rotulo: 'Artigos', href: '/artigos/' },
   ],
   hero: {
@@ -27,6 +34,31 @@ export const copy = {
     ctaSecundario: 'Como funciona a consulta',
     ctaSecundarioHref: '#consulta',
   },
+
+  sobre: {
+    eyebrow: 'Sobre',
+    titulo: `Quem é a ${nomeCompleto}`,
+    paragrafos: [
+      `${nomeCompleto} é médica ginecologista e obstetra, com consultório individual em ${profile.endereco.cidade}-${profile.endereco.uf}.`,
+      `${CONFIRMAR}: um ou dois parágrafos escritos ou aprovados pela Dra. sobre como ela conduz o atendimento. Sem adjetivos de autopromoção.`,
+    ],
+    rotulos: {
+      registro: 'Registro profissional',
+      graduacao: 'Graduação',
+      residencia: 'Residência médica',
+      titulos: 'Títulos',
+      sociedades: 'Sociedades',
+      areasAtuacao: 'Áreas de atuação',
+    },
+  },
+
+  areas: {
+    eyebrow: 'Áreas de cuidado',
+    titulo: 'Acompanhamento em cada fase',
+    texto: 'Cada fase da vida traz dúvidas diferentes. Estes são os assuntos mais comuns em cada uma delas.',
+    rotuloLista: 'O que costuma ser acompanhado',
+  },
+
   /** Os cinco marcos da Linha da Vida. Descrevem áreas de atuação, sem promessa de resultado. */
   marcos: {
     revisao: `${CONFIRMAR}: a Dra. atende todas as fases listadas? Realiza partos? Em qual hospital?`,
@@ -35,54 +67,132 @@ export const copy = {
         id: 'adolescencia',
         eyebrow: 'Fase 1',
         titulo: 'Adolescência e primeira consulta',
-        texto: 'A primeira consulta ginecológica é um momento de conversa: ciclo menstrual, vacinação, dúvidas sobre o corpo e orientações para cuidar da saúde desde cedo.',
+        texto: 'A primeira consulta ginecológica é, antes de tudo, uma conversa. Não é preciso ter um problema para marcar.',
+        acompanha: ['Ciclo menstrual e cólicas', 'Vacinação', 'Dúvidas sobre o corpo e a sexualidade', 'Orientação sobre métodos contraceptivos'],
       },
       {
         id: 'prevencao',
         eyebrow: 'Fase 2',
         titulo: 'Vida adulta e prevenção',
-        texto: 'Consultas de rotina, exame preventivo do colo do útero, planejamento reprodutivo e orientação sobre métodos contraceptivos.',
+        texto: 'Consultas de rotina para acompanhar a saúde ginecológica ao longo dos anos.',
+        acompanha: ['Exame preventivo do colo do útero', 'Planejamento reprodutivo e contracepção', 'Alterações do ciclo e corrimentos', 'Pedido e revisão de exames de rotina'],
       },
       {
         id: 'gestacao',
         eyebrow: 'Fase 3',
         titulo: 'Gestação e pré-natal',
-        texto: 'Do planejamento da gravidez ao acompanhamento pré-natal: consultas periódicas, exames de cada trimestre e orientações para cada etapa.',
+        texto: 'Do planejamento da gravidez ao acompanhamento pré-natal, com consultas periódicas em cada trimestre.',
+        acompanha: ['Consulta antes de engravidar', 'Consultas e exames do pré-natal', 'Vacinas da gestação', 'Orientações para cada etapa'],
       },
       {
         id: 'parto',
         eyebrow: 'Fase 4',
         titulo: 'Parto e puerpério',
-        texto: 'Orientações sobre o parto e acompanhamento no pós-parto, período de muitas mudanças para a mulher e para a família.',
+        texto: 'O período depois do parto também é acompanhado: é uma fase de muitas mudanças para a mulher e para a família.',
+        acompanha: ['Conversa sobre o parto', 'Consulta de pós-parto', 'Amamentação e retorno do ciclo', 'Contracepção após o parto'],
       },
       {
         id: 'climaterio',
         eyebrow: 'Fase 5',
         titulo: 'Climatério e maturidade',
-        texto: 'Acompanhamento na transição para a menopausa e cuidados com a saúde nas fases seguintes da vida.',
+        texto: 'A transição para a menopausa acontece aos poucos, e cada mulher vive essa fase de um jeito.',
+        acompanha: ['Mudanças do ciclo e sintomas da transição', 'Conversa sobre opções de tratamento, quando indicado', 'Exames de rotina desta fase', 'Saúde dos ossos e do coração'],
       },
     ],
   },
+
   consulta: {
-    eyebrow: 'Antes de vir',
+    eyebrow: 'Antes da sua consulta',
     titulo: 'Como funciona a consulta',
-    duracaoTitulo: 'Duração',
+    convite: 'Traga suas dúvidas anotadas.',
+    conviteTexto: 'Na hora é comum esquecer. Uma lista no celular ou num papel ajuda a não deixar nada para trás.',
+    duracaoRotulo: 'Duração aproximada',
     duracao: CONFIRMAR,
-    etapasTitulo: 'O que acontece',
-    etapas: [CONFIRMAR],
-    oQueLevarTitulo: 'O que levar',
-    oQueLevar: [
-      'Documento com foto',
-      'Carteirinha do convênio, se for o caso',
-      'Exames anteriores, se houver',
-      'Lista de medicamentos em uso',
+    passos: [
+      {
+        titulo: 'O que levar',
+        itens: ['Documento com foto', 'Exames anteriores, se tiver', 'Lista de medicações em uso', 'Sua lista de dúvidas', 'Carteirinha do convênio, se for o caso'],
+      },
+      {
+        titulo: 'Chegada e acolhimento',
+        texto: `${CONFIRMAR}: como é a recepção (cadastro, tempo de espera, se pode vir acompanhada).`,
+      },
+      {
+        titulo: 'A conversa',
+        texto: 'A consulta começa ouvindo você: o motivo da visita, seu histórico de saúde, ciclo menstrual, gestações anteriores e medicações. É o momento de trazer suas dúvidas.',
+      },
+      {
+        titulo: 'Exame físico, quando indicado',
+        texto: `Nem toda consulta tem exame físico. Quando for necessário, o motivo é explicado antes e o exame só acontece com a sua concordância. ${CONFIRMAR}: o que costuma ser examinado em cada tipo de consulta.`,
+      },
+      {
+        titulo: 'Orientações',
+        texto: `Ao final, você sai sabendo o que foi avaliado e quais são os próximos passos. ${CONFIRMAR}: as orientações e pedidos de exame são entregues por escrito? Impressos ou digitais?`,
+      },
+      {
+        titulo: 'Retorno',
+        texto: `${CONFIRMAR}: quando há retorno (ex.: para mostrar exames), como agendar e se tem custo à parte.`,
+      },
     ],
   },
-  agendamento: {
-    titulo: 'Agendamento',
-    texto: 'O agendamento é feito pelo WhatsApp ou por telefone.',
-    convenios: 'Convênios atendidos',
+
+  guia: {
+    eyebrow: 'Qual consulta é para mim?',
+    titulo: 'Um guia rápido para se preparar',
+    legenda: 'Em que momento você está?',
+    instrucao: 'Escolha uma opção para ver as sugestões.',
+    rotulos: { tipo: 'Tipo de consulta', levar: 'O que levar', pergunta: 'Uma pergunta para fazer' },
+    fases: [
+      {
+        id: 'prevencao',
+        rotulo: 'Rotina e prevenção',
+        tipo: 'Consulta ginecológica de rotina.',
+        levar: ['Resultado do último preventivo, se tiver', 'Data da última menstruação', 'Método contraceptivo que usa'],
+        pergunta: 'Quais exames de rotina fazem sentido para a minha idade?',
+      },
+      {
+        id: 'gestacao',
+        rotulo: 'Gestação ou planejando',
+        tipo: 'Consulta pré-concepcional (se está planejando) ou consulta de pré-natal (se já está grávida).',
+        levar: ['Teste ou exame de gravidez, se tiver', 'Carteira de vacinação', 'Exames recentes'],
+        pergunta: 'Com que frequência serão as consultas e quais exames vêm primeiro?',
+      },
+      {
+        id: 'posparto',
+        rotulo: 'Pós-parto',
+        tipo: 'Consulta de puerpério (pós-parto).',
+        levar: ['Resumo de alta do hospital', 'Caderneta da gestante', 'Lista de medicações em uso'],
+        pergunta: 'Que método contraceptivo é compatível com a amamentação?',
+      },
+      {
+        id: 'menopausa',
+        rotulo: 'Menopausa',
+        tipo: 'Consulta de acompanhamento do climatério.',
+        levar: ['Anotações sobre mudanças no ciclo', 'Exames recentes', 'Lista de medicações em uso'],
+        pergunta: 'Quais são as opções para lidar com o que tenho sentido?',
+      },
+      {
+        id: 'outra',
+        rotulo: 'Outro motivo',
+        tipo: 'Consulta ginecológica. Na mensagem de agendamento não é preciso explicar o motivo.',
+        levar: ['Exames anteriores, se tiver', 'Lista de medicações em uso', 'Suas dúvidas anotadas'],
+        pergunta: 'O que devo observar até a próxima consulta?',
+      },
+    ],
   },
+
+  convenios: {
+    eyebrow: 'Convênios e particular',
+    titulo: 'Formas de atendimento',
+    pendente: `${CONFIRMAR}: lista de convênios atendidos e se atende particular.`,
+    rotuloLista: 'Convênios atendidos',
+    comoAgendar: 'Para agendar pelo convênio, informe o nome do plano na mensagem.',
+    particular: 'Também há atendimento particular.',
+    somenteParticular: 'No momento, o atendimento é apenas particular.',
+    somenteConvenio: 'No momento, o atendimento é apenas pelos convênios listados.',
+    duvidas: 'Se o seu plano não está na lista, pergunte ao agendar.',
+  },
+
   ctaFinal: {
     eyebrow: 'Agendamento',
     titulo: 'Quando quiser, é só chamar.',
@@ -98,6 +208,6 @@ export const copy = {
     revisadoEm: 'Revisado em',
     acessoEm: 'acesso em',
   },
-  faq: { titulo: 'Perguntas frequentes' },
+  faq: { eyebrow: 'Dúvidas', titulo: 'Perguntas frequentes' },
   rodape: { direitos: 'Todos os direitos reservados.', privacidade: 'Política de privacidade' },
 } as const;
