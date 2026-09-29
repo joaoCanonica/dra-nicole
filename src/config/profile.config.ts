@@ -71,11 +71,13 @@ export const profile: Profile = {
   tratamento: 'Dra.',
   especialidade: 'Ginecologia e Obstetrícia',
   subtitulo: 'Ginecologista e obstetra em Lages-SC',
-  crm: { numero: CONFIRMAR, uf: 'SC' },
-  rqe: [CONFIRMAR],
+  // Fonte: perfis públicos da Dra. (Instagram/Facebook); confirmados pelo responsável do projeto.
+  crm: { numero: '23345', uf: 'SC' },
+  rqe: ['20891'],
   endereco: {
     logradouro: CONFIRMAR,
-    bairro: CONFIRMAR,
+    complemento: 'Centro Comercial Azteca',
+    bairro: 'Centro',
     cidade: 'Lages',
     uf: 'SC',
     cep: CONFIRMAR,
@@ -83,14 +85,14 @@ export const profile: Profile = {
   },
   coordenadas: { lat: null, lng: null },
   horarios: CONFIRMAR,
-  telefone: { exibicao: CONFIRMAR, e164: CONFIRMAR },
+  telefone: { exibicao: '(49) 3223-6171', e164: '+554932236171' },
   // A mensagem padrão NUNCA pede sintoma ou dado clínico (LGPD).
   whatsapp: {
     ddi: '55',
-    numero: CONFIRMAR, // DDD + número, só dígitos (ex.: 49999999999)
+    numero: '49991453084', // DDD + número, só dígitos
     mensagemPadrao: 'Olá, gostaria de agendar uma consulta.',
   },
-  instagram: { usuario: CONFIRMAR, url: CONFIRMAR },
+  instagram: { usuario: 'dra.nicolevzanette', url: 'https://www.instagram.com/dra.nicolevzanette/' },
   googleBusiness: { placeId: CONFIRMAR, urlAvaliar: CONFIRMAR, urlPerfil: CONFIRMAR },
   convenios: CONFIRMAR,
   atendeParticular: CONFIRMAR,
@@ -98,7 +100,7 @@ export const profile: Profile = {
   idioma: 'pt-BR',
   formacao: {
     graduacao: `${CONFIRMAR}: curso, instituição e ano`,
-    residencia: `${CONFIRMAR}: residência em Ginecologia e Obstetrícia, instituição e ano`,
+    residencia: 'Residência em Ginecologia e Obstetrícia no Hospital Regional do Alto Vale do Itajaí',
     titulos: [`${CONFIRMAR}: título de especialista (ex.: TEGO/FEBRASGO), se houver`],
     sociedades: [`${CONFIRMAR}: sociedades das quais é membro`],
     areasAtuacao: [`${CONFIRMAR}: áreas de atuação registradas`],
