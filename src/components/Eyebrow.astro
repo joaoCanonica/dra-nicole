@@ -1,0 +1,13 @@
+---
+interface Props { as?: 'p' | 'span' }
+const { as: Tag = 'p' } = Astro.props;
+---
+<Tag class="eyebrow"><slot /></Tag>
+<style>
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: var(--esp-3);
+    font-size: var(--fs-n1); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--cor-acento-texto);
+  }
+  .eyebrow::before { content: ''; inline-size: 1.75rem; block-size: 1px; background: currentColor; }
+</style>

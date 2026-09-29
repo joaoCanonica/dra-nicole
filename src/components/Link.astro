@@ -1,0 +1,19 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon from './Icon.astro';
+import { copy } from '../config/copy.pt-BR';
+
+interface Props extends HTMLAttributes<'a'> { href: string; externo?: boolean; sutil?: boolean }
+const { href, externo = /^https?:\/\//.test(href), sutil = false, class: cls, ...rest } = Astro.props;
+---
+<a
+  href={href}
+  class:list={['link', { 'link--sutil': sutil }, cls]}
+  {...(externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+  {...rest}
+><slot />{externo && (<><Icon nome="externo" tamanho={14} /><span class="visually-hidden"> {copy.a11y.abreEmNovaAba}</span></>)}</a>
+<style>
+  .link { display: inline-flex; align-items: center; gap: 0.3em; color: var(--cor-primaria); text-decoration-thickness: 1px; transition: color var(--mov-rapido) var(--mov-curva); }
+  .link:hover { color: var(--cor-primaria-hover); text-decoration-thickness: 2px; }
+  .link--sutil { color: inherit; }
+</style>

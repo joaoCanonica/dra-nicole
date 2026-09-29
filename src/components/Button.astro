@@ -1,0 +1,40 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type NomeIcone } from './Icon.astro';
+import { copy } from '../config/copy.pt-BR';
+
+type Base = { variante?: 'primario' | 'secundario' | 'fantasma'; icone?: NomeIcone; bloco?: boolean };
+type Props = Base & (({ href: string } & HTMLAttributes<'a'>) | ({ href?: undefined } & HTMLAttributes<'button'>));
+
+const { variante = 'primario', icone, bloco = false, href, class: cls, ...rest } = Astro.props;
+const externo = typeof href === 'string' && /^https?:\/\//.test(href);
+const classes = ['btn', `btn--${variante}`, { 'btn--bloco': bloco }, cls];
+---
+{href ? (
+  <a href={href} class:list={classes} {...(externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})} {...rest}>
+    {icone && <Icon nome={icone} />}<span><slot /></span>
+    {externo && <span class="visually-hidden">{copy.a11y.abreEmNovaAba}</span>}
+  </a>
+) : (
+  <button type={"button" as const} class:list={classes} {...(rest as HTMLAttributes<"button">)}>
+    {icone && <Icon nome={icone} />}<span><slot /></span>
+  </button>
+)}
+<style>
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--esp-3);
+    min-height: 2.75rem; /* alvo de toque ≥ 44px (WCAG 2.5.8) */
+    padding: var(--esp-3) var(--esp-5);
+    border: 1.5px solid transparent; border-radius: var(--raio-pilula);
+    font-weight: 600; font-size: var(--fs-0); line-height: 1.2; text-decoration: none; cursor: pointer;
+    transition: background-color var(--mov-rapido) var(--mov-curva), color var(--mov-rapido) var(--mov-curva), transform var(--mov-rapido) var(--mov-curva);
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn--primario { background: var(--cor-primaria); color: var(--cor-primaria-texto); }
+  .btn--primario:hover { background: var(--cor-primaria-hover); }
+  .btn--secundario { border-color: var(--cor-primaria); color: var(--cor-primaria); background: transparent; }
+  .btn--secundario:hover { background: var(--cor-agua-suave); color: var(--cor-texto); }
+  .btn--fantasma { color: var(--cor-primaria); background: transparent; padding-inline: var(--esp-3); }
+  .btn--fantasma:hover { text-decoration: underline; }
+  .btn--bloco { width: 100%; }
+</style>

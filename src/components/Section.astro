@@ -1,0 +1,32 @@
+---
+import Container from './Container.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  id?: string;
+  titulo?: string;
+  eyebrow?: string;
+  tom?: 'fundo' | 'superficie' | 'alt';
+  largura?: 'texto' | 'padrao' | 'larga';
+  class?: string;
+}
+const { id, titulo, eyebrow, tom = 'fundo', largura = 'padrao', class: cls } = Astro.props;
+const tituloId = titulo && id ? `${id}-titulo` : undefined;
+---
+<section id={id} class:list={['secao', `secao--${tom}`, cls]} aria-labelledby={tituloId}>
+  <Container largura={largura}>
+    {(titulo || eyebrow) && (
+      <header class="secao__cabecalho">
+        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        {titulo && <h2 id={tituloId}>{titulo}</h2>}
+      </header>
+    )}
+    <slot />
+  </Container>
+</section>
+<style>
+  .secao { padding-block: var(--esp-9); scroll-margin-top: var(--esp-7); }
+  .secao--superficie { background: var(--cor-superficie); }
+  .secao--alt { background: var(--cor-superficie-alt); }
+  .secao__cabecalho { display: grid; gap: var(--esp-3); margin-bottom: var(--esp-7); }
+</style>

@@ -1,0 +1,11 @@
+---
+interface Props { tom?: 'agua' | 'lilas' | 'neutro' }
+const { tom = 'agua' } = Astro.props;
+---
+<span class:list={['tag', `tag--${tom}`]}><slot /></span>
+<style>
+  .tag { display: inline-flex; align-items: center; padding: 0.2em 0.75em; border-radius: var(--raio-pilula); font-size: var(--fs-n1); font-weight: 600; line-height: 1.5; color: var(--cor-texto); }
+  .tag--agua { background: var(--cor-agua-suave); }
+  .tag--lilas { background: color-mix(in srgb, var(--cor-acento) 22%, var(--cor-superficie)); }
+  .tag--neutro { background: transparent; border: 1px solid var(--cor-borda); }
+</style>

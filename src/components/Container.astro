@@ -1,0 +1,11 @@
+---
+interface Props { largura?: 'texto' | 'padrao' | 'larga'; as?: 'div' | 'header' | 'footer' | 'nav'; class?: string }
+const { largura = 'padrao', as: Tag = 'div', class: cls } = Astro.props;
+---
+<Tag class:list={['container', `container--${largura}`, cls]}><slot /></Tag>
+<style>
+  .container { width: 100%; margin-inline: auto; padding-inline: var(--margem-pagina); }
+  .container--padrao { max-width: calc(var(--largura-max) + 2 * var(--margem-pagina)); }
+  .container--texto { max-width: calc(var(--medida-texto) + 2 * var(--margem-pagina)); }
+  .container--larga { max-width: calc(90rem + 2 * var(--margem-pagina)); }
+</style>

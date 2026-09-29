@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+import { gerarTokensCss } from '../styles/tokens';
+import { copy } from '../config/copy.pt-BR';
+import { compliance } from '../config/compliance.config';
+import { profile } from '../config/profile.config';
+import { theme } from '../config/theme.config';
+import Container from '../components/Container.astro';
+import Link from '../components/Link.astro';
+
+interface Props { titulo?: string; descricao?: string }
+const { titulo, descricao = copy.meta.descricao } = Astro.props;
+const tituloFinal = titulo ? `${titulo}${copy.meta.separador}${copy.meta.tituloPadrao}` : copy.meta.tituloPadrao;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const tokens = gerarTokensCss();
+---
+<!doctype html>
+<html lang={profile.idioma}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloFinal}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={theme.cores.claro.fundo} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={theme.cores.escuro.fundo} media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content={tituloFinal} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={profile.idioma.replace('-', '_')} />
+    <style is:inline set:html={tokens}></style>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">{copy.a11y.pularParaConteudo}</a>
+    <Container as="header" class="topo">
+      <a href="/" class="topo__marca">{copy.meta.tituloPadrao.split(copy.meta.separador)[0]}</a>
+      <nav aria-label={copy.a11y.menu}>
+        <ul class="topo__nav">{copy.nav.map((i) => <li><Link href={i.href} sutil>{i.rotulo}</Link></li>)}</ul>
+      </nav>
+    </Container>
+    <main id="conteudo"><slot /></main>
+    <footer class="rodape">
+      <Container>
+        <p class="rodape__emergencia">{compliance.avisoEmergencia}</p>
+        <p>{compliance.rodapeCfm}</p>
+        <p class="rodape__legal">{compliance.avisoConteudo}</p>
+      </Container>
+    </footer>
+  </body>
+</html>
+<style>
+  .topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-4); padding-block: var(--esp-5); }
+  .topo__marca { font-family: var(--fonte-display); font-size: var(--fs-2); color: var(--cor-texto); text-decoration: none; }
+  .topo__nav { display: flex; gap: var(--esp-5); list-style: none; padding: 0; }
+  .rodape { background: var(--cor-superficie-alt); padding-block: var(--esp-8); font-size: var(--fs-n1); color: var(--cor-texto-suave); }
+  .rodape :global(.container) { display: grid; gap: var(--esp-4); }
+  .rodape__emergencia { color: var(--cor-texto); font-weight: 600; }
+</style>

@@ -1,0 +1,22 @@
+---
+interface Props { href?: string; as?: 'article' | 'div' | 'li'; class?: string }
+const { href, as: Tag = 'div', class: cls } = Astro.props;
+---
+<Tag class:list={['card', { 'card--link': href }, cls]}>
+  <slot name="topo" />
+  <div class="card__corpo"><slot /></div>
+  {href && <a class="card__cobertura" href={href}><span class="visually-hidden"><slot name="rotulo-link" /></span></a>}
+</Tag>
+<style>
+  .card {
+    position: relative; display: flex; flex-direction: column; gap: var(--esp-4);
+    padding: var(--esp-6); background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda); border-radius: var(--raio-l); box-shadow: var(--sombra-s);
+    transition: box-shadow var(--mov-medio) var(--mov-curva), transform var(--mov-medio) var(--mov-curva);
+  }
+  .card__corpo { display: grid; gap: var(--esp-3); }
+  .card--link:hover { box-shadow: var(--sombra-m); transform: translateY(-2px); }
+  .card--link:focus-within { outline: 3px solid var(--cor-foco); outline-offset: 3px; }
+  .card__cobertura { position: absolute; inset: 0; border-radius: inherit; }
+  .card__cobertura:focus-visible { outline: none; }
+</style>
