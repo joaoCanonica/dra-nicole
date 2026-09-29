@@ -1,0 +1,6 @@
+---
+import PaginaLegal from '../components/PaginaLegal.astro';
+import { privacidade } from '../config/legal.pt-BR';
+import { copy } from '../config/copy.pt-BR';
+---
+<PaginaLegal {...privacidade} caminho="/privacidade/" rotuloVersao={copy.legal.versao} rotuloIndice={copy.legal.indice} />

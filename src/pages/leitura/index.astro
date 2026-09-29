@@ -18,7 +18,7 @@ const minutos = (corpo = '') => Math.max(1, Math.round(corpo.split(/\s+/).filter
 ---
 <BaseLayout tituloCompleto={copy.seo.leitura.titulo} descricao={copy.seo.leitura.descricao}>
   <Container><Breadcrumbs itens={[{ nome: l.eyebrow, caminho: '/leitura/' }]} /></Container>
-  <Section id="leitura" eyebrow={l.eyebrow} titulo={l.titulo}>
+  <Section id="leitura" eyebrow={l.eyebrow} titulo={l.titulo} nivelTitulo={1}>
     <p class="leitura__intro">{l.descricao}</p>
     <ul class="grade leitura__lista" role="list">
       {artigos.map((a) => (

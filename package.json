@@ -15,8 +15,10 @@
     "impressos": "tsx scripts/gerar-impressos.ts",
     "pendencias": "tsx scripts/validate-config.ts --relatorio",
     "check": "npm run validate && astro check",
-    "build": "tsx scripts/validate-config.ts --build && astro build",
-    "preview": "astro preview"
+    "build": "tsx scripts/validate-config.ts --build && astro build && tsx scripts/audit-compliance.ts",
+    "preview": "astro preview",
+    "audit:compliance": "tsx scripts/audit-compliance.ts",
+    "audit:a11y": "tsx scripts/audit-a11y.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
@@ -29,6 +31,7 @@
     "@astrojs/check": "0.9.10",
     "@types/node": "22.20.4",
     "@types/qrcode": "1.5.6",
+    "axe-core": "4.13.0",
     "playwright-core": "1.56.1",
     "qrcode": "1.5.4",
     "tsx": "4.23.15",

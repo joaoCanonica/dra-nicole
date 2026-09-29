@@ -26,7 +26,7 @@ export const contato = {
     imagem: null as string | null,
     urlGoogleMaps: CONFIRMAR as string,
   },
-  comoChegar: `${CONFIRMAR}: referência de localização (ex.: próximo a…), andar/sala, entrada.`,
+  comoChegar: `${CONFIRMAR}: ponto de localização (ex.: próximo a…), andar/sala, entrada.`,
   estacionamento: `${CONFIRMAR}: há estacionamento próprio, conveniado ou na rua?`,
   acessibilidade: `${CONFIRMAR}: acesso para cadeira de rodas, elevador, banheiro adaptado.`,
 };

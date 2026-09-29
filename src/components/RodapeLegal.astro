@@ -1,0 +1,31 @@
+---
+/** Identificação CFM + links legais. Tudo vem do config. */
+import Texto from './Texto.astro';
+import { compliance } from '../config/compliance.config';
+import { copy } from '../config/copy.pt-BR';
+import { nomeCompleto, profile } from '../config/profile.config';
+
+const est = compliance.cfm.estabelecimento;
+---
+<div class="rodape-legal">
+  <p class="rodape-legal__id">
+    <strong>{nomeCompleto}</strong> · {profile.especialidade}<br />
+    CRM-{profile.crm.uf} <Texto valor={profile.crm.numero} />
+    {profile.rqe.length > 0 && <> · RQE {profile.rqe.map((r) => <Texto valor={r} />)}</>}
+    · {compliance.cfm.rotuloResponsavel}
+  </p>
+  {est && (
+    <p class="rodape-legal__est">
+      <Texto valor={est.nome} />{est.cnpj && <> · CNPJ <Texto valor={est.cnpj} /></>} · <Texto valor={est.registroCrm} /> · <Texto valor={est.diretorTecnico} />
+    </p>
+  )}
+  <nav aria-label="Links institucionais">
+    <ul class="rodape-legal__links">{copy.rodapeLinks.map((l) => <li><a href={l.href}>{l.rotulo}</a></li>)}</ul>
+  </nav>
+</div>
+<style>
+  .rodape-legal { display: grid; gap: var(--esp-3); }
+  .rodape-legal__id strong { color: var(--cor-texto); }
+  .rodape-legal__links { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); list-style: none; padding: 0; }
+  .rodape-legal__links a { display: inline-flex; align-items: center; min-block-size: 2.75rem; color: var(--cor-texto); }
+</style>

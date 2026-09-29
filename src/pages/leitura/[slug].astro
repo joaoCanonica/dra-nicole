@@ -47,7 +47,7 @@ const jsonLd = JSON.stringify(schemaArtigo(artigo, url, site));
         <h2 id="fontes-titulo">{l.fontes}</h2>
         <ol>
           {d.fontes.map((f) => (
-            <li><Link href={f.url}>{f.nome}</Link> <span class="artigo__acesso">({l.acessoEm} {data(f.dataAcesso)})</span></li>
+            <li data-citacao><Link href={f.url}>{f.nome}</Link> <span class="artigo__acesso">({l.acessoEm} {data(f.dataAcesso)})</span></li>
           ))}
         </ol>
         <p class="artigo__responsavel">{nomeCompleto} · {registroProfissional}</p>

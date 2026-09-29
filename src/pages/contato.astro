@@ -30,7 +30,7 @@ const urlMapa = contato.mapa.urlGoogleMaps === CONFIRMAR ? e.urlMapa : contato.m
 <BaseLayout tituloCompleto={copy.seo.contato.titulo} descricao={copy.seo.contato.descricao}>
   <script type="application/ld+json" set:html={jsonLd} slot="head" />
   <Container><Breadcrumbs itens={[{ nome: c.eyebrow, caminho: '/contato/' }]} /></Container>
-  <Section id="contato" eyebrow={c.eyebrow} titulo={c.titulo}>
+  <Section id="contato" eyebrow={c.eyebrow} titulo={c.titulo} nivelTitulo={1}>
     <div class="contato grade">
       <div class="contato__info">
         <dl class="contato__lista">

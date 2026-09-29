@@ -297,12 +297,24 @@ export const copy = {
   },
 
   consentimento: {
-    titulo: 'Sua privacidade',
-    texto: 'Este site pode contar, de forma anônima, quantas pessoas clicam nos botões de contato. Nenhum dado de saúde é coletado. Você aceita?',
+    titulo: 'Cookies e privacidade',
+    texto: 'Usamos o armazenamento essencial para o site funcionar. Com a sua permissão, também contamos de forma anônima os cliques nos botões de contato. Nenhum dado de saúde é coletado.',
     aceitar: 'Aceitar',
     recusar: 'Recusar',
-    preferencias: 'Preferências de privacidade',
+    personalizar: 'Personalizar',
+    salvar: 'Salvar escolhas',
+    sempreAtivo: 'Sempre ativo',
+    saibaMais: 'Política de privacidade',
+    preferencias: 'Preferências de cookies',
   },
+
+  legal: { versao: 'Versão', indice: 'Nesta página' },
+
+  rodapeLinks: [
+    { rotulo: 'Política de privacidade', href: '/privacidade/' },
+    { rotulo: 'Termos de uso', href: '/termos/' },
+    { rotulo: 'Contato', href: '/contato/' },
+  ],
 
   ctaFinal: {
     eyebrow: 'Agendamento',

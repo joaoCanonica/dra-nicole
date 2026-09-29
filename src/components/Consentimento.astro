@@ -1,87 +1,141 @@
 ---
 /**
- * Consentimento para métricas anônimas. Só é renderizado se contato.analytics.tipo !== 'nenhum'.
- * Antes do "Aceitar": nenhum script de terceiros, nenhum request, nenhum cookie.
- * Eventos: apenas { evento, origem, caminho } — sem dados pessoais nem de saúde.
+ * Banner de cookies. Só existe se houver categoria opcional ativa (hoje: estatística, quando
+ * contato.analytics.tipo !== 'nenhum'). Sem dark patterns:
+ *  - Aceitar, Recusar e Personalizar com o mesmo estilo e tamanho;
+ *  - nada pré-marcado além do essencial; fechar sem escolher = nada ativado;
+ *  - não bloqueia a navegação (não é "cookie wall");
+ *  - escolha registrada no navegador com versão e data; pode ser mudada pelo rodapé.
+ * Antes do consentimento: nenhum script de terceiros, nenhum request, nenhum cookie.
  */
 import { contato } from '../config/contato.config';
+import { compliance } from '../config/compliance.config';
 import { copy } from '../config/copy.pt-BR';
 
 const a = contato.analytics;
 const c = copy.consentimento;
-const config = JSON.stringify(a);
+const k = compliance.cookies;
+const categorias = k.categorias.filter((cat) => cat.obrigatoria || (cat.id === 'estatistica' && a.tipo !== 'nenhum'));
+const temOpcional = categorias.some((cat) => !cat.obrigatoria);
+const config = JSON.stringify({ analytics: a, versao: k.versaoConsentimento, chave: k.chave });
 ---
-{a.tipo !== 'nenhum' && (
+{temOpcional && (
   <>
-    <div class="consentimento-banner" data-consentimento data-config={config} role="region" aria-label={c.titulo} hidden>
-      <p><strong>{c.titulo}.</strong> {c.texto}</p>
-      <div class="consentimento-banner__acoes">
-        <button type="button" data-consentir="sim">{c.aceitar}</button>
-        <button type="button" data-consentir="nao">{c.recusar}</button>
+    <section class="cookies" data-consentimento data-config={config} aria-labelledby="cookies-titulo" hidden>
+      <h2 id="cookies-titulo" class="cookies__titulo">{c.titulo}</h2>
+      <p>{c.texto} <a href="/privacidade/#cookies">{c.saibaMais}</a></p>
+      <form class="cookies__painel" data-painel hidden>
+        {categorias.map((cat) => (
+          <label class="cookies__categoria">
+            <input type="checkbox" name={cat.id} checked={cat.obrigatoria} disabled={cat.obrigatoria} />
+            <span><strong>{cat.titulo}</strong>{cat.obrigatoria && <em> · {c.sempreAtivo}</em>}<br />{cat.descricao}</span>
+          </label>
+        ))}
+        <button type="submit" class="cookies__btn">{c.salvar}</button>
+      </form>
+      <div class="cookies__acoes">
+        <button type="button" class="cookies__btn" data-acao="aceitar">{c.aceitar}</button>
+        <button type="button" class="cookies__btn" data-acao="recusar">{c.recusar}</button>
+        <button type="button" class="cookies__btn" data-acao="personalizar" aria-expanded="false">{c.personalizar}</button>
       </div>
-    </div>
-    <button type="button" class="consentimento-reabrir" data-consentimento-reabrir>{c.preferencias}</button>
+    </section>
+    <button type="button" class="cookies__reabrir" data-consentimento-reabrir>{c.preferencias}</button>
   </>
 )}
 
 <script>
-  type Cfg = { tipo: 'beacon'; endpoint: string } | { tipo: 'plausible'; script: string; dominio: string };
-  const CHAVE = 'consentimento-metricas';
+  type Analytics = { tipo: 'nenhum' } | { tipo: 'beacon'; endpoint: string } | { tipo: 'plausible'; script: string; dominio: string };
+  type Registro = { versao: string; data: string; categorias: { estatistica: boolean } };
   const banner = document.querySelector<HTMLElement>('[data-consentimento]');
   if (banner) {
-    const cfg = JSON.parse(banner.dataset.config ?? '{}') as Cfg;
-    const ler = () => { try { return localStorage.getItem(CHAVE); } catch { return null; } };
-    const gravar = (v: string) => { try { localStorage.setItem(CHAVE, v); } catch { /* sem armazenamento: vale só nesta visita */ } };
-    let ativo = false;
+    const { analytics, versao, chave } = JSON.parse(banner.dataset.config ?? '{}') as { analytics: Analytics; versao: string; chave: string };
+    const painel = banner.querySelector<HTMLFormElement>('[data-painel]')!;
+    const btnPers = banner.querySelector<HTMLButtonElement>('[data-acao="personalizar"]')!;
+    let estatistica = false;
+    let carregado = false;
 
-    const ativar = () => {
-      if (ativo) return;
-      ativo = true;
-      if (cfg.tipo === 'plausible') {
+    const ler = (): Registro | null => {
+      try { const r = JSON.parse(localStorage.getItem(chave) ?? 'null') as Registro | null; return r && r.versao === versao ? r : null; } catch { return null; }
+    };
+    const aplicar = (r: Registro) => {
+      estatistica = r.categorias.estatistica;
+      const caixa = painel.querySelector<HTMLInputElement>('input[name="estatistica"]');
+      if (caixa) caixa.checked = estatistica;
+      if (estatistica && !carregado && analytics.tipo === 'plausible') {
+        carregado = true;
         const s = document.createElement('script');
-        s.defer = true; s.src = cfg.script; s.dataset.domain = cfg.dominio;
+        s.defer = true; s.src = analytics.script; s.dataset.domain = analytics.dominio;
         document.head.append(s);
       }
     };
-    const enviar = (evento: string, origem: string) => {
-      if (!ativo) return;
-      const props = { origem, caminho: location.pathname };
-      if (cfg.tipo === 'beacon') navigator.sendBeacon?.(cfg.endpoint, JSON.stringify({ evento, ...props }));
-      if (cfg.tipo === 'plausible') (window as unknown as { plausible?: (e: string, o: object) => void }).plausible?.(evento, { props });
+    const registrar = (est: boolean) => {
+      const r: Registro = { versao, data: new Date().toISOString(), categorias: { estatistica: est } };
+      try { localStorage.setItem(chave, JSON.stringify(r)); } catch { /* sem armazenamento: vale só nesta visita */ }
+      aplicar(r);
+      banner.hidden = true;
+      painel.hidden = true;
+      btnPers.setAttribute('aria-expanded', 'false');
     };
 
-    document.addEventListener('click', (e) => {
-      const alvo = (e.target as Element).closest<HTMLElement>('[data-evento]');
-      if (alvo) enviar(alvo.dataset.evento ?? '', alvo.dataset.origem ?? '');
-    });
     banner.addEventListener('click', (e) => {
-      const v = (e.target as HTMLElement).closest<HTMLElement>('[data-consentir]')?.dataset.consentir;
-      if (!v) return;
-      gravar(v);
-      banner.hidden = true;
-      if (v === 'sim') ativar();
+      const acao = (e.target as Element).closest<HTMLElement>('[data-acao]')?.dataset.acao;
+      if (acao === 'aceitar') registrar(true);
+      if (acao === 'recusar') registrar(false);
+      if (acao === 'personalizar') {
+        painel.hidden = !painel.hidden;
+        btnPers.setAttribute('aria-expanded', String(!painel.hidden));
+        if (!painel.hidden) painel.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();
+      }
     });
-    document.querySelector('[data-consentimento-reabrir]')?.addEventListener('click', () => { banner.hidden = false; });
+    painel.addEventListener('submit', (e) => {
+      e.preventDefault();
+      registrar(!!painel.querySelector<HTMLInputElement>('input[name="estatistica"]')?.checked);
+    });
+    document.querySelector('[data-consentimento-reabrir]')?.addEventListener('click', () => {
+      banner.hidden = false;
+      banner.querySelector<HTMLElement>('.cookies__btn')?.focus();
+    });
 
-    const escolha = ler();
-    if (escolha === 'sim') ativar();
-    else if (escolha !== 'nao') banner.hidden = false;
+    // Métricas: só eventos anônimos { evento, origem, caminho }, e só com a categoria aceita.
+    document.addEventListener('click', (e) => {
+      if (!estatistica) return;
+      const alvo = (e.target as Element).closest<HTMLElement>('[data-evento]');
+      if (!alvo) return;
+      const props = { origem: alvo.dataset.origem ?? '', caminho: location.pathname };
+      const evento = alvo.dataset.evento ?? '';
+      if (analytics.tipo === 'beacon') navigator.sendBeacon?.(analytics.endpoint, JSON.stringify({ evento, ...props }));
+      if (analytics.tipo === 'plausible') (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.(evento, { props });
+    });
+
+    const r = ler();
+    if (r) aplicar(r);
+    else banner.hidden = false;
   }
 </script>
 
 <style>
-  .consentimento-banner {
+  .cookies {
     position: fixed; z-index: 60; inset-inline: var(--esp-4); inset-block-end: calc(5rem + env(safe-area-inset-bottom));
-    display: grid; gap: var(--esp-4); max-inline-size: 32rem; padding: var(--esp-5);
-    background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: var(--raio-l); box-shadow: var(--sombra-l);
-    font-size: var(--fs-n1);
+    display: grid; gap: var(--esp-4); max-inline-size: 34rem; max-block-size: calc(100dvh - 7rem); overflow-y: auto;
+    padding: var(--esp-5); background: var(--cor-superficie); color: var(--cor-texto);
+    border: 1px solid var(--cor-borda); border-radius: var(--raio-l); box-shadow: var(--sombra-l); font-size: var(--fs-n1);
   }
-  @media (min-width: 48rem) { .consentimento-banner { inset-block-end: var(--esp-5); } }
-  .consentimento-banner__acoes { display: flex; gap: var(--esp-3); }
-  .consentimento-banner button, .consentimento-reabrir {
-    min-block-size: 2.75rem; padding: var(--esp-2) var(--esp-5); border-radius: var(--raio-pilula);
-    border: 1.5px solid var(--cor-primaria); background: transparent; color: var(--cor-primaria); font-weight: 600; cursor: pointer;
+  @media (min-width: 48rem) { .cookies { inset-block-end: var(--esp-5); } }
+  .cookies[hidden], .cookies__painel[hidden] { display: none; }
+  .cookies__titulo { font-size: var(--fs-1); }
+  .cookies__acoes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--esp-2); }
+  /* Mesmo estilo para todas as opções: nenhuma é destacada. */
+  .cookies__btn {
+    min-block-size: 2.75rem; padding: var(--esp-2) var(--esp-2); border-radius: var(--raio-pilula);
+    border: 1.5px solid var(--cor-primaria); background: var(--cor-superficie); color: var(--cor-primaria); font-weight: 600; cursor: pointer;
   }
-  /* Aceitar e Recusar com o mesmo peso visual (sem induzir a escolha). */
-  .consentimento-reabrir { border: 0; padding-inline: 0; font-size: var(--fs-n1); text-decoration: underline; color: var(--cor-texto-suave); }
+  .cookies__btn:hover { background: var(--cor-agua-suave); color: var(--cor-texto); }
+  .cookies__btn:focus-visible, .cookies__reabrir:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+  .cookies__painel { display: grid; gap: var(--esp-4); padding-block: var(--esp-3); border-block: 1px solid var(--cor-borda); }
+  .cookies__categoria { display: grid; grid-template-columns: auto 1fr; gap: var(--esp-3); align-items: start; }
+  .cookies__categoria input { inline-size: 1.5rem; block-size: 1.5rem; margin-block-start: 0.15rem; accent-color: var(--cor-primaria); }
+  .cookies__reabrir {
+    justify-self: start; min-block-size: 2.75rem; padding: 0; border: 0; background: none; cursor: pointer;
+    color: var(--cor-texto-suave); font-size: var(--fs-n1); text-decoration: underline;
+  }
 </style>

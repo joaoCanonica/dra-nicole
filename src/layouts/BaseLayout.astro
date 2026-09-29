@@ -10,6 +10,7 @@ import Link from '../components/Link.astro';
 import AvisoEmergencia from '../components/AvisoEmergencia.astro';
 import BarraContato from '../components/BarraContato.astro';
 import Consentimento from '../components/Consentimento.astro';
+import RodapeLegal from '../components/RodapeLegal.astro';
 import fonteDisplay from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
 import fonteTexto from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
@@ -71,7 +72,7 @@ const tokens = gerarTokensCss();
     <footer class="rodape">
       <Container>
         <AvisoEmergencia />
-        <p>{compliance.rodapeCfm}</p>
+        <RodapeLegal />
         <p class="rodape__legal">{compliance.avisoConteudo}</p>
         <Consentimento />
       </Container>

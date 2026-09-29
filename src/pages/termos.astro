@@ -1,0 +1,6 @@
+---
+import PaginaLegal from '../components/PaginaLegal.astro';
+import { termos } from '../config/legal.pt-BR';
+import { copy } from '../config/copy.pt-BR';
+---
+<PaginaLegal {...termos} caminho="/termos/" rotuloVersao={copy.legal.versao} rotuloIndice={copy.legal.indice} />

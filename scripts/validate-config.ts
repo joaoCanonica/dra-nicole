@@ -15,6 +15,9 @@ import { compliance } from '../src/config/compliance.config';
 import { copy } from '../src/config/copy.pt-BR';
 import { contraste } from '../src/lib/color';
 import { calendario } from '../src/config/calendario.config';
+import { termosVetados } from '../src/lib/termos';
+import { contato } from '../src/config/contato.config';
+import { privacidade, termos } from '../src/config/legal.pt-BR';
 
 const args = process.argv.slice(2);
 const producao =
@@ -124,7 +127,7 @@ function coletar(obj: unknown, caminho: string): void {
   else if (Array.isArray(obj)) obj.forEach((v, i) => coletar(v, `${caminho}[${i}]`));
   else if (obj && typeof obj === 'object') {
     for (const [k, v] of Object.entries(obj)) {
-      if (caminho === 'compliance' && k === 'termosProibidos') continue;
+      if (caminho === 'compliance' && k === 'termosVetados') continue;
       coletar(v, `${caminho}.${k}`);
     }
   }
@@ -132,6 +135,9 @@ function coletar(obj: unknown, caminho: string): void {
 coletar(profile, 'profile');
 coletar(compliance, 'compliance');
 coletar(copy, 'copy');
+coletar(contato, 'contato');
+coletar({ privacidade, termos }, 'legal');
+coletar(calendario, 'calendario');
 
 function arquivos(dir: string): string[] {
   return readdirSync(dir).flatMap((f) => {
@@ -169,14 +175,9 @@ for (const d of calendario) {
 
 // Publicidade médica: termos proibidos.
 const ehCitacao = (linha: string) => /^\s*(-\s*)?(nome|url):/.test(linha);
-for (const termo of compliance.termosProibidos) {
-  const prefixo = termo.endsWith('*');
-  const base = termo.replace(/\*$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(`(^|[^\\p{L}])${base}${prefixo ? '' : '(?![\\p{L}])'}`, 'iu');
-  for (const t of textos) {
-    if (ehCitacao(t.texto)) continue;
-    if (re.test(t.texto)) erros.push(`termo proibido "${termo}" em ${t.onde}: "${t.texto.trim()}"`);
-  }
+for (const t of textos) {
+  if (ehCitacao(t.texto)) continue;
+  for (const o of termosVetados(t.texto)) erros.push(`termo vetado "${o.termo}" (${o.motivo}) em ${t.onde}: "${o.trecho}"`);
 }
 
 // CONFIRMAR rastreável.
